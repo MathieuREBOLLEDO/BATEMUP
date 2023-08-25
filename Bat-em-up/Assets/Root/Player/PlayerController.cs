@@ -93,15 +93,17 @@ public class Player : MonoBehaviour
     {
         bool isMovingForward = Input.GetAxis("Horizontal") > 0;
         bool isMovingBackward = Input.GetAxis("Horizontal") < 0;
-        bool isMovingSide = Input.GetAxis("Vertical") < 0;
-        /*
+        bool isMovingDown = Input.GetAxis("Vertical") < 0;
+        bool isMovingUp = Input.GetAxis("Vertical") > 0;
+
         vehicleThrusters[0].SetBool("Moving", isMovingForward);
         vehicleThrusters[1].SetBool("Moving", isMovingForward);
+        
         vehicleThrusters[2].SetBool("Moving", isMovingBackward);
         vehicleThrusters[3].SetBool("Moving", isMovingBackward);
-        vehicleThrusters[4].SetBool("Moving", isMovingSide);
-        vehicleThrusters[5].SetBool("Moving", !isMovingSide);
-        */
+        vehicleThrusters[4].SetBool("Moving", isMovingDown);
+        vehicleThrusters[5].SetBool("Moving", isMovingUp);
+        
     }
 
     private void HandleAttack()

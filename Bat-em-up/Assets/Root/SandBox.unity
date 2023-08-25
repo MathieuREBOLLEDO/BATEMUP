@@ -285,9 +285,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: P_Player
       objectReference: {fileID: 0}
-    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
-      propertyPath: scaleUpFactor
-      value: 1.7
+    - target: {fileID: 2702674737815391951, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2702674737815391951, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3102800039667237870, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3102800039667237870, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4028935610344342450, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
       propertyPath: m_LocalPosition.x
@@ -348,7 +360,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7772928068953543284, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
       propertyPath: scaleDownFactor
-      value: 3
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 796040340308285896, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
       propertyPath: m_LocalScale.x
