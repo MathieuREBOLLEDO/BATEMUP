@@ -13,6 +13,7 @@ public class BounceEffect : MonoBehaviour
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
         screenBounds = new Vector2(camWidth, camHeight);
+        Debug.Log("Screen Bounds : " + screenBounds);
     }
 
     void Update()

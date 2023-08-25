@@ -4,22 +4,34 @@ using UnityEngine;
 
 public class Player_Bullet : MonoBehaviour
 {
-    public float timeBeforeSlowDown = 2.0f;
+
+    public float timeBeforeSlowDown = 0.25f;
     public float smoothTime = 0.5f;
     private Transform player;
-    public float minSize = 1f;
+
+    [Header ("Speed")]
+    public float minSize = 0.5f;
+    public float maxSize = 7f;
+
+    [Header ("Scale")]
     public float minSpeed = 5f;
+    public float maxSpeed = 30F;
     public float slowDownFactor = 0.1f;
     public float scaleDownFactor = 0.1f;
 
     private float velocityTimeElapsed;
-    [SerializeField] private bool startingSlowDown;
+    [SerializeField] private bool startingSlowDown = true;
     [SerializeField] private Rigidbody2D rigidBody;
     private Vector2 currentVelocity = Vector2.zero;
 
     private float initialScale;
     private float targetScale;
     private float originalVelocityMagnitude;
+
+    private void Awake()
+    {
+        initialScale = transform.localScale.x;
+    }
 
     private void Start()
     {
@@ -62,8 +74,10 @@ public class Player_Bullet : MonoBehaviour
             targetScale = Mathf.Lerp(minSize, initialScale, normalizedVelocityMagnitude);
 
             // Smooth scaling
+            
             float smoothedScale = Mathf.Lerp(transform.localScale.x, targetScale, Time.deltaTime / smoothTime);
             transform.localScale = Vector3.one * smoothedScale;
+            
 
             // Apply smoothed velocity
             rigidBody.velocity = Vector2.SmoothDamp(

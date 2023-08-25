@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731707, g: 0.13414726, b: 0.1210787, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -267,7 +267,7 @@ Transform:
   m_GameObject: {fileID: 872450002}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -284,6 +284,10 @@ PrefabInstance:
     - target: {fileID: 73922567397579937, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
       propertyPath: m_Name
       value: P_Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: scaleUpFactor
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 4028935610344342450, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
       propertyPath: m_LocalPosition.x
@@ -338,6 +342,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7772928068953543284, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
+      propertyPath: slowDownFactor
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -7772928068953543284, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
+      propertyPath: scaleDownFactor
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 796040340308285896, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 796040340308285896, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 796040340308285896, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 796040340308285896, guid: 7bdbafba0d1b35e4da4e7fe175fe6892, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.39

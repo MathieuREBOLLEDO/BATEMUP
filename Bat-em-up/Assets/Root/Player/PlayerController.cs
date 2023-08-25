@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float attackRate = 0.5f;
     [SerializeField] private float attackDamage = 20f;
     [SerializeField] private float attackPower = 15f;
+    [SerializeField] float scaleUpFactor = 4f;
     private float nextAttack = 0f;
 
     [Header("Weapon Component")]
@@ -75,8 +76,9 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Bouncing_Bullet"))
         {
             Vector3 direction = (collision.transform.position - transform.position).normalized;
-            collision.GetComponent<Rigidbody2D>().velocity = direction * attackPower;
-            collision.gameObject.layer = LayerMask.NameToLayer("Bullet_Player");
+            collision.GetComponent<Rigidbody2D>().velocity = direction * (attackPower + collision.GetComponent<Rigidbody2D>().velocity.magnitude);
+            collision.transform.localScale = collision.transform.localScale * scaleUpFactor;
+            //collision.gameObject.layer = LayerMask.NameToLayer("Bullet_Player");
         }
     }
 
@@ -113,8 +115,9 @@ public class Player : MonoBehaviour
                 isAttacking = true;
                 weaponGO.SetActive(true);
                 //weaponAnimator.SetTrigger("Attacking");
-                //weaponSwingFXAnimator.SetTrigger("Attacking");
+                weaponSwingFXAnimator.SetTrigger("Attacking");
                 Invoke("EndAttack", 0.25f);
+
 
                 attackTimer = 0f;
             }
