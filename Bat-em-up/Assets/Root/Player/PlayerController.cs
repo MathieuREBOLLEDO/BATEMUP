@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float topBottomOffset = 0.5f;
     [SerializeField] private float rightOffset = 5f;
     [SerializeField] private float leftOffset = 0.5f;
-    private Camera mainCamera;
+    private Vector2 screenBounds;
 
     float fireTimer;
     float attackTimer;
@@ -56,7 +56,11 @@ public class Player : MonoBehaviour
         rigidBody = GetComponent<Rigidbody2D>();
         polygonCollider = GetComponent<PolygonCollider2D>();
         weaponGO.SetActive(false);
-        mainCamera = Camera.main;
+        //mainCamera = Camera.main;
+
+        float camHeight = Camera.main.orthographicSize;
+        float camWidth = camHeight * Camera.main.aspect;
+        screenBounds = new Vector2(camWidth, camHeight);
     }
 
     void Update()
@@ -68,7 +72,11 @@ public class Player : MonoBehaviour
 
     void LateUpdate()
     {
-        ClampPositionToCameraBounds();
+        Vector3 newPosition = transform.position;
+
+        newPosition.x = Mathf.Clamp(newPosition.x, -screenBounds.x + leftOffset, screenBounds.x - rightOffset);
+        newPosition.y = Mathf.Clamp(newPosition.y, -screenBounds.y + topBottomOffset, screenBounds.y - topBottomOffset);
+        transform.position = newPosition;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -131,22 +139,17 @@ public class Player : MonoBehaviour
         weaponGO.SetActive(false);
         isAttacking = false;
     }
-
-    private void ClampPositionToCameraBounds()
+    /*
+    Vector3 ClampPosition(Vector3 position)
     {
-        /*
-        float cameraHeight = mainCamera.orthographicSize * 2f;
-        float cameraWidth = cameraHeight * mainCamera.aspect;
+        // Get the screen boundaries in world coordinates
+        Vector3 lowerLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
+        Vector3 upperRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, 0));
 
-        Vector3 clampedPosition = transform.position;
-        clampedPosition.x = Mathf.Clamp(clampedPosition.x, leftOffset + cameraWidth * 0.5f, cameraWidth - leftOffset - cameraWidth * 0.5f);
-        clampedPosition.y = Mathf.Clamp(clampedPosition.y, topBottomOffset + cameraHeight * 0.5f, cameraHeight - topBottomOffset - cameraHeight * 0.5f);
-        transform.position = clampedPosition;
-        /*
-        Vector3 clampedPosition = transform.position;
-        clampedPosition.x = Mathf.Clamp(clampedPosition.x, leftOffset, rightOffset);
-        clampedPosition.y = Mathf.Clamp(clampedPosition.y, topBottomOffset, topBottomOffset);
-        transform.position = clampedPosition;
-        */
+        float clampedX = Mathf.Clamp(position.x, lowerLeft.x, upperRight.x);
+        float clampedY = Mathf.Clamp(position.y, lowerLeft.y, upperRight.y);
+
+        return new Vector3(clampedX, clampedY, position.z);
     }
+    */
 }

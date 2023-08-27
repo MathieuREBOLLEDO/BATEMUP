@@ -103,9 +103,12 @@ MonoBehaviour:
   timeBeforeSlowDown: 2
   smoothTime: 0.5
   minSize: 1
+  maxSize: 7
   minSpeed: 5
+  maxSpeed: 30
   slowDownFactor: 0.1
   scaleDownFactor: 0.1
+  bulletGameObject: {fileID: 5513844394755072050}
   startingSlowDown: 0
   rigidBody: {fileID: 6090856777504506827}
 --- !u!114 &4228991809464579867

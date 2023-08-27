@@ -69,10 +69,10 @@ MonoBehaviour:
   vehicleThrusters:
   - {fileID: 8261005696486650857}
   - {fileID: 642691204016270732}
-  - {fileID: 8261005696486650857}
-  - {fileID: 642691204016270732}
   - {fileID: 4422124478774956966}
   - {fileID: 6768285736500889747}
+  - {fileID: 3733486977886412423}
+  - {fileID: 3243484199386495920}
   muzzleLeft: {fileID: 0}
   muzzleRight: {fileID: 0}
   muzzleCenter: {fileID: 0}
@@ -858,6 +858,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6efd28706d2dd404fb550cf97850f15d, type: 3}
+--- !u!95 &3243484199386495920 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2518623318064637252, guid: 6efd28706d2dd404fb550cf97850f15d, type: 3}
+  m_PrefabInstance: {fileID: 1148656643274448628}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7868231203753834475 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7116052131297110303, guid: 6efd28706d2dd404fb550cf97850f15d, type: 3}
@@ -920,6 +925,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6efd28706d2dd404fb550cf97850f15d, type: 3}
+--- !u!95 &3733486977886412423 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2518623318064637252, guid: 6efd28706d2dd404fb550cf97850f15d, type: 3}
+  m_PrefabInstance: {fileID: 1235094813493525443}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8350442845027783388 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7116052131297110303, guid: 6efd28706d2dd404fb550cf97850f15d, type: 3}

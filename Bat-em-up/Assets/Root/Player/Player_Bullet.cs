@@ -19,13 +19,15 @@ public class Player_Bullet : MonoBehaviour
     public float slowDownFactor = 0.1f;
     public float scaleDownFactor = 0.1f;
 
+
     private float velocityTimeElapsed;
+    [SerializeField] GameObject bulletGameObject;
     [SerializeField] private bool startingSlowDown = true;
     [SerializeField] private Rigidbody2D rigidBody;
     private Vector2 currentVelocity = Vector2.zero;
 
     private float initialScale;
-    private float targetScale;
+    private float targetScale = 0;
     private float originalVelocityMagnitude;
 
     private void Awake()
@@ -37,9 +39,14 @@ public class Player_Bullet : MonoBehaviour
     {
         player = GameObject.Find("P_Player").transform;
         rigidBody = GetComponent<Rigidbody2D>();
-        initialScale = transform.localScale.x;
+        initialScale = bulletGameObject.transform.localScale.x;
         targetScale = initialScale;
         originalVelocityMagnitude = rigidBody.velocity.magnitude;
+        if (originalVelocityMagnitude == 0)
+        {
+            originalVelocityMagnitude = minSpeed;
+        }
+
     }
 
     private void Update()
@@ -72,11 +79,12 @@ public class Player_Bullet : MonoBehaviour
             // Update target scale to match slow down
             float normalizedVelocityMagnitude = Mathf.Clamp01(rigidBody.velocity.magnitude / originalVelocityMagnitude);
             targetScale = Mathf.Lerp(minSize, initialScale, normalizedVelocityMagnitude);
-
-            // Smooth scaling
             
-            float smoothedScale = Mathf.Lerp(transform.localScale.x, targetScale, Time.deltaTime / smoothTime);
-            transform.localScale = Vector3.one * smoothedScale;
+            // Smooth scaling
+
+            float smoothedScale = Mathf.Lerp(bulletGameObject.transform.localScale.x, targetScale, Time.deltaTime / smoothTime);
+            //Debug.Log("smoothedScale : " + smoothedScale);
+            bulletGameObject.transform.localScale = Vector3.one * smoothedScale;
             
 
             // Apply smoothed velocity
