@@ -68,6 +68,9 @@ public class Player : MonoBehaviour
         HandleMovement();
         HandleThrusterAnimations();
         HandleAttack();
+        
+        //Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Debug.Log(mousePos);
     }
 
     void LateUpdate()
@@ -83,10 +86,19 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bouncing_Bullet"))
         {
-            Vector3 direction = (collision.transform.position - transform.position).normalized;
-            collision.GetComponent<Rigidbody2D>().velocity = direction * (attackPower + collision.GetComponent<Rigidbody2D>().velocity.magnitude);
-            collision.transform.localScale = collision.transform.localScale * scaleUpFactor;
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 direction = (mousePos-transform.position).normalized;
+            //Vector3 direction = (collision.transform.position - transform.position).normalized;
+
+            //collision.GetComponent<Rigidbody2D>().velocity = direction * (attackPower + collision.GetComponent<Rigidbody2D>().velocity.magnitude);
+            //collision.transform.localScale = collision.transform.localScale * scaleUpFactor;
+
             //collision.gameObject.layer = LayerMask.NameToLayer("Bullet_Player");
+
+            if ( collision.GetComponent<Player_Bullet>())
+            {
+                collision.GetComponent<Player_Bullet>().hitEvent(direction);
+            }
         }
     }
 
@@ -139,17 +151,4 @@ public class Player : MonoBehaviour
         weaponGO.SetActive(false);
         isAttacking = false;
     }
-    /*
-    Vector3 ClampPosition(Vector3 position)
-    {
-        // Get the screen boundaries in world coordinates
-        Vector3 lowerLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
-        Vector3 upperRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, 0));
-
-        float clampedX = Mathf.Clamp(position.x, lowerLeft.x, upperRight.x);
-        float clampedY = Mathf.Clamp(position.y, lowerLeft.y, upperRight.y);
-
-        return new Vector3(clampedX, clampedY, position.z);
-    }
-    */
 }
