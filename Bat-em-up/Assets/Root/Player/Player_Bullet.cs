@@ -104,6 +104,7 @@ public class Player_Bullet : MonoBehaviour
 
     public void hitEvent(Vector3 direction)
     {
+        startingSlowDown = false;
         GetComponent<Rigidbody2D>().velocity = direction * (accPower + GetComponent<Rigidbody2D>().velocity.magnitude);
         currentScaleMaxVector = transform.localScale * scaleUpFactor;
         transform.localScale = currentScaleMaxVector;

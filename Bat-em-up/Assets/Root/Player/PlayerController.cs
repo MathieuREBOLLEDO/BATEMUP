@@ -82,6 +82,12 @@ public class Player : MonoBehaviour
         transform.position = newPosition;
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Debug // Collision enter with : " + collision);
+        Debug.Break();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Bouncing_Bullet"))
