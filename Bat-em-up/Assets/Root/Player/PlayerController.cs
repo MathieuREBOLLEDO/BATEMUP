@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+
+using Debug = UnityEngine.Debug;
 
 public class Player : MonoBehaviour
 {
@@ -29,6 +32,7 @@ public class Player : MonoBehaviour
     [SerializeField] private bool canShoot = true;
     [SerializeField] private bool canBeDamaged = true;
     [SerializeField] private bool isAttacking = false;
+    private int attackCollideValue = 0;
     [SerializeField] private bool isHit = false;
     [SerializeField] private bool isDead = false;
 
@@ -55,7 +59,7 @@ public class Player : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody2D>();
         polygonCollider = GetComponent<PolygonCollider2D>();
-        weaponGO.SetActive(false);
+        //weaponGO.SetActive(false);
         //mainCamera = Camera.main;
 
         float camHeight = Camera.main.orthographicSize;
@@ -84,28 +88,18 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Debug // Collision enter with : " + collision);
-        Debug.Break();
+       // Debug.Log("Debug // Collision enter with : " + collision);
+       
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Bouncing_Bullet"))
-        {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 direction = (mousePos-transform.position).normalized;
-            //Vector3 direction = (collision.transform.position - transform.position).normalized;
+        CallEventAttack(collision);
+    }
 
-            //collision.GetComponent<Rigidbody2D>().velocity = direction * (attackPower + collision.GetComponent<Rigidbody2D>().velocity.magnitude);
-            //collision.transform.localScale = collision.transform.localScale * scaleUpFactor;
-
-            //collision.gameObject.layer = LayerMask.NameToLayer("Bullet_Player");
-
-            if ( collision.GetComponent<Player_Bullet>())
-            {
-                collision.GetComponent<Player_Bullet>().hitEvent(direction);
-            }
-        }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        CallEventAttack(collision);
     }
 
     private void HandleMovement()
@@ -141,7 +135,7 @@ public class Player : MonoBehaviour
             if (attackTimer >= attackRate)
             {
                 isAttacking = true;
-                weaponGO.SetActive(true);
+                //weaponGO.SetActive(true);
                 //weaponAnimator.SetTrigger("Attacking");
                 weaponSwingFXAnimator.SetTrigger("Attacking");
                 Invoke("EndAttack", 0.25f);
@@ -151,10 +145,31 @@ public class Player : MonoBehaviour
             }
         }
     }
+    private void CallEventAttack(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 direction = (mousePos - transform.position).normalized;
+            //Vector3 direction = (collision.transform.position - transform.position).normalized;
+
+            //collision.GetComponent<Rigidbody2D>().velocity = direction * (attackPower + collision.GetComponent<Rigidbody2D>().velocity.magnitude);
+            //collision.transform.localScale = collision.transform.localScale * scaleUpFactor;
+
+            //collision.gameObject.layer = LayerMask.NameToLayer("Bullet_Player");
+
+            if (collision.GetComponent<Player_Bullet>() && attackCollideValue == 0)
+            {
+                attackCollideValue++;
+                collision.GetComponent<Player_Bullet>().hitEvent(direction);
+            }
+        }
+    }
 
     private void EndAttack()
     {
-        weaponGO.SetActive(false);
+        //weaponGO.SetActive(false);
         isAttacking = false;
+        attackCollideValue = 0;
     }
 }
