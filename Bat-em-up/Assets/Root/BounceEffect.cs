@@ -5,6 +5,7 @@ public class BounceEffect : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 screenBounds;
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -13,7 +14,12 @@ public class BounceEffect : MonoBehaviour
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
         screenBounds = new Vector2(camWidth, camHeight);
-        Debug.Log("Screen Bounds : " + screenBounds);
+        //Debug.Log("Screen Bounds : " + screenBounds);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Had collision");
     }
 
     void Update()

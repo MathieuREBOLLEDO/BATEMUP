@@ -21,7 +21,8 @@ public class Player_Bullet : MonoBehaviour
     public float minSpeed = 5f;
     public float maxSpeed = 30F;
     public float scaleUpFactor = 1.4f;
-    private Vector3 currentScaleMaxVector;
+    private Vector3 currentMaxScale;
+    public float maxScale = 4;
     public float slowDownFactor = 0.1f;
     public float scaleDownFactor = 0.1f;
 
@@ -85,14 +86,13 @@ public class Player_Bullet : MonoBehaviour
             // Update target scale to match slow down
             float normalizedVelocityMagnitude = Mathf.Clamp01(rigidBody.velocity.magnitude / originalVelocityMagnitude);
 
-            targetScale = Mathf.Lerp(currentScaleMaxVector.x , initialScale, normalizedVelocityMagnitude);
-            
+            targetScale = Mathf.Lerp(currentMaxScale.x , initialScale, normalizedVelocityMagnitude);
+
             // Smooth scaling
 
-            
-            float smoothedScale = Mathf.Lerp(bulletGameObject.transform.localScale.x, targetScale, Time.deltaTime / smoothTime);
-            //Debug.Log("smoothedScale : " + smoothedScale);
-            bulletGameObject.transform.localScale = Vector3.one * smoothedScale;
+
+            //float smoothedScale = Mathf.Lerp(bulletGameObject.transform.localScale.x, targetScale, Time.deltaTime / smoothTime);
+            bulletGameObject.transform.localScale = Vector3.one * targetScale;
             
 
             // Apply smoothed velocity
@@ -109,9 +109,10 @@ public class Player_Bullet : MonoBehaviour
     {
        // Debug.Log("Call Hit");
         startingSlowDown = false;
+        velocityTimeElapsed = 0;
         GetComponent<Rigidbody2D>().velocity = direction * (accPower + GetComponent<Rigidbody2D>().velocity.magnitude);
-        currentScaleMaxVector = transform.localScale * scaleUpFactor;
-        transform.localScale = currentScaleMaxVector;
+        currentMaxScale = transform.localScale * scaleUpFactor;
+        transform.localScale = currentMaxScale;
     }
 }
 
