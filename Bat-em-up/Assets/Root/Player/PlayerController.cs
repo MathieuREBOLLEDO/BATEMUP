@@ -89,6 +89,10 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
        // Debug.Log("Debug // Collision enter with : " + collision);
+       if ( collision.gameObject.GetComponent<CircleCollider2D>())
+        {
+            Destroy(collision.gameObject);
+        }
        
     }
 
@@ -162,8 +166,15 @@ public class Player : MonoBehaviour
             {
                 attackCollideValue++;
                 collision.GetComponent<Player_Bullet>().hitEvent(direction);
-            }
+                Time.timeScale = 0.1f;
+                Invoke("EndImpactEffect", Time.deltaTime);
+;            }
         }
+    }
+
+    private void EndImpactEffect()
+    {
+        Time.timeScale = 1f;
     }
 
     private void EndAttack()
