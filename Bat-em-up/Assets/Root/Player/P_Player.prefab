@@ -79,7 +79,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 0}
   spriteRenderer: {fileID: 0}
   topBottomOffset: 0.5
-  rightOffset: 5
+  rightOffset: 1
   leftOffset: 0.5
 --- !u!50 &537427155886566234
 Rigidbody2D:

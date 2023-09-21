@@ -17,6 +17,7 @@ public class Cursor : MonoBehaviour
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
         screenBounds = new Vector2(camWidth, camHeight);
+
     }
 
     // Update is called once per frame

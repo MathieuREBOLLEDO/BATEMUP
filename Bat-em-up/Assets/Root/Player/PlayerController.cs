@@ -154,7 +154,7 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 direction = (mousePos - transform.position).normalized;
+            Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y).normalized;
             //Vector3 direction = (collision.transform.position - transform.position).normalized;
 
             //collision.GetComponent<Rigidbody2D>().velocity = direction * (attackPower + collision.GetComponent<Rigidbody2D>().velocity.magnitude);
