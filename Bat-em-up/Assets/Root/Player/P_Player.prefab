@@ -57,7 +57,6 @@ MonoBehaviour:
   attackRate: 0.5
   attackDamage: 20
   attackPower: 15
-  scaleUpFactor: 1.7
   weaponGO: {fileID: 4672620915606494587}
   weaponAnimator: {fileID: 0}
   weaponSwingFXAnimator: {fileID: 7308142862729192217}
@@ -78,6 +77,8 @@ MonoBehaviour:
   muzzleCenter: {fileID: 0}
   bulletPrefab: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  rigidBody: {fileID: 537427155886566234}
+  polygonCollider: {fileID: 4689845406244737217}
   topBottomOffset: 0.5
   rightOffset: 1
   leftOffset: 0.5
@@ -89,7 +90,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 73922567397579937}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -382,7 +383,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4672620915606494587}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -705,7 +706,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 936b89cd1a7eb5847bd153eaf4c79b55, type: 2}
+  - {fileID: 2100000, guid: 1e8561219a3cd6843865072176319196, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -4,48 +4,39 @@ using UnityEngine;
 
 public class Player_Bullet : MonoBehaviour
 {
-    public bool inIdle = true;
-    public bool wasHit = false;
-    public bool startingSlowDown = false;
-    public float timeBeforeSlowDown = 0.25f;
-    public float smoothTime = 0.5f;
-    private Transform player;
+    // Variables for bullet state and behavior
+    public bool inIdle = true;              // Indicates if the bullet is in idle state
+    public bool wasHit = false;            // Indicates if the bullet was hit
+    public bool startingSlowDown = false;  // Indicates if the bullet is starting to slow down
+    public float timeBeforeSlowDown = 0.25f; // Time before the bullet starts to slow down
+    public float smoothTime = 0.5f;         // Smooth time for velocity adjustments
+    private Player player;               // Reference to the player's transform
 
-
-    public float power = 15f;
+    // Variables for bullet properties
+    public float power = 15f;                // Bullet power
     [Header("Speed")]
-
-    [SerializeField] public float minSpeed = 5f;
-    [SerializeField] public float maxSpeed = 30F;
+    [SerializeField] public float minSpeed = 5f; // Minimum bullet speed
+    [SerializeField] public float maxSpeed = 30F; // Maximum bullet speed
 
     [Header("Scale")]
-
-    public float minSize = 0.5f;
-    public float maxSize = 7f;
-    public float scaleUpFactor = 1.4f;
-    //private Vector3 currentMaxScale;
+    public float minSize = 0.5f;           // Minimum bullet size
+    public float maxSize = 7f;             // Maximum bullet size
+    public float scaleUpFactor = 1.4f;     // Factor to scale up the bullet
 
     [Header("Time")]
-    public float maxSlowDuration = 15f;
-    public float lerpTime;
-    private float currentLerpTime;
+    public float maxSlowDuration = 15f;    // Maximum slow duration
+    public float lerpTime;                 // Time for lerping
+    private float currentLerpTime;         // Current lerping time
 
-    //public float slowDownFactor = 0.1f;
-    //public float scaleDownFactor = 0.1f;
+    // Variables for velocity and movement
+    private float velocityTimeElapsed;     // Time elapsed for velocity adjustments
+    [SerializeField] GameObject bulletGameObject; // Reference to the bullet's game object
+    [SerializeField] private Rigidbody2D rigidBody; // Reference to the bullet's rigidbody
+    public Vector2 currentVelocity = Vector2.zero; // Current velocity of the bullet
 
-
-    private float velocityTimeElapsed;
-    [SerializeField] GameObject bulletGameObject;
-
-    [SerializeField] private Rigidbody2D rigidBody;
-    public Vector2 currentVelocity = Vector2.zero;
-
-    private float initialScale;
-    //private float targetScale = 0;
-    //private float originalVelocityMagnitude;
-
-    private Vector3 targetPosition;
-    private float currentSpeed;
+    private float initialScale;            // Initial scale of the bullet
+    private Vector3 targetPosition;        // Target position for bullet movement
+    private float currentSpeed;            // Current speed of the bullet
 
     private void Awake()
     {
@@ -54,20 +45,18 @@ public class Player_Bullet : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.Find("P_Player").transform;
+        // Find the player's transform by name
+        player = Player.instance;
         rigidBody = GetComponent<Rigidbody2D>();
         initialScale = bulletGameObject.transform.localScale.x;
         rigidBody.velocity = new Vector2(-1, 0);
-
-
-
     }
 
     private void Update()
     {
         if (wasHit)
         {
-           // rigidBody.velocity = direction* Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
+            // Handle behavior when the bullet was hit
             velocityTimeElapsed += Time.deltaTime;
 
             if (velocityTimeElapsed >= timeBeforeSlowDown)
@@ -77,10 +66,10 @@ public class Player_Bullet : MonoBehaviour
                 wasHit = false;
             }
         }
-       
 
         if (startingSlowDown)
         {
+            // Handle behavior when the bullet is starting to slow down
             if (transform.localScale.x > minSize)
             {
                 currentLerpTime += Time.deltaTime / maxSlowDuration;
@@ -100,52 +89,32 @@ public class Player_Bullet : MonoBehaviour
                 inIdle = true;
                 startingSlowDown = false;
                 currentSpeed = currentVelocity.magnitude;
-                //rigidBody.velocity = Vector2.zero;
             }
         }
         if (inIdle)
         {
-            // Calculate the direction from the bullet to the player
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-
-            // Set a target position with a slight delay
-            targetPosition = player.position - directionToPlayer * 0.5f;
-
-            // Calculate the desired velocity to reach the target position
+            // Handle behavior when the bullet is in idle state
+            Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
+            targetPosition = player.transform.position - directionToPlayer * 0.05f;
             Vector2 desiredVelocity = (targetPosition - transform.position).normalized * maxSpeed;
-
-            // Use SmoothDamp to smoothly adjust the bullet's velocity towards the desired velocity
             Vector2 smoothedVelocity = Vector2.SmoothDamp(rigidBody.velocity, desiredVelocity, ref currentVelocity, smoothTime);
-
-            // Set the bullet's velocity to the smoothed velocity
             rigidBody.velocity = smoothedVelocity;
-
-            // Gradually slow down the bullet
-            rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 1.5f * Time.deltaTime);
-
+            rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 2.25f * Time.deltaTime);
         }
         currentVelocity = rigidBody.velocity;
     }
 
-    public void  hitEvent(Vector2 direction)
+    public void hitEvent(Vector2 direction)
     {
+        // Handle behavior when the bullet is hit
         inIdle = false;
         wasHit = true;
         startingSlowDown = false;
-
         velocityTimeElapsed = 0;
-
         float clampedScale = Mathf.Clamp(transform.localScale.x * scaleUpFactor, minSize, maxSize);
-
         transform.localScale = Vector3.one * clampedScale;
-
-        currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);    
-
-        
-        rigidBody.velocity = direction* Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
-
+        currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
+        rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
         lerpTime = 0;
-
     }
 }
-

@@ -13,7 +13,7 @@ public class Cursor : MonoBehaviour
     void Start()
     {
         playerPos = GameObject.FindWithTag("Player").transform.position;
-        line = GetComponent<LineRenderer>();
+        //line = GetComponent<LineRenderer>();
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
         screenBounds = new Vector2(camWidth, camHeight);
@@ -36,8 +36,8 @@ public class Cursor : MonoBehaviour
         //Debug.DrawRay(playerPos, direction*500f,Color.white);
 
         
-        line.SetPosition(0, playerPos);
-        line.SetPosition(1, direction * 500f);
+        //line.SetPosition(0, playerPos);
+        //line.SetPosition(1, direction * 500f);
         //line.SetPosition(line.positionCount-1,)
 
 

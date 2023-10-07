@@ -9,4 +9,10 @@ public class EnemyWeapon : ScriptableObject
     public float fireInterval = 1f;
     public float projectileSpeed = 10f;
     public int damage = 10;
+
+    public void Fire ()
+    {
+
+    }
+
 }
