@@ -162,7 +162,7 @@ public class Player : MonoBehaviour
         // Handle player's attack
         attackTimer += Time.deltaTime;
 
-        if (Input.GetButtonDown("Fire1") || Input.GetButtonDown("Fire2"))
+        if (Input.GetButton("Fire1") || Input.GetButton("Fire2"))
         {
             if (attackTimer >= attackRate)
             {
