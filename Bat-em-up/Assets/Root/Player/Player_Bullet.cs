@@ -9,7 +9,7 @@ public class Player_Bullet : MonoBehaviour
     public bool wasHit = false;            // Indicates if the bullet was hit
     public bool startingSlowDown = false;  // Indicates if the bullet is starting to slow down
     public float timeBeforeSlowDown = 0.25f; // Time before the bullet starts to slow down
-    public float smoothTime = 0.5f;         // Smooth time for velocity adjustments
+    public float smoothTime = 0.1f;         // Smooth time for velocity adjustments
     private Player player;               // Reference to the player's transform
 
     // Variables for bullet properties
@@ -99,7 +99,7 @@ public class Player_Bullet : MonoBehaviour
             Vector2 desiredVelocity = (targetPosition - transform.position).normalized * maxSpeed;
             Vector2 smoothedVelocity = Vector2.SmoothDamp(rigidBody.velocity, desiredVelocity, ref currentVelocity, smoothTime);
             rigidBody.velocity = smoothedVelocity;
-            rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 2.25f * Time.deltaTime);
+            rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 1.25f * Time.deltaTime);
         }
         currentVelocity = rigidBody.velocity;
     }

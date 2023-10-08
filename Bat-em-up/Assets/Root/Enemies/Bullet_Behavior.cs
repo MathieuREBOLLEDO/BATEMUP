@@ -11,6 +11,8 @@ public class Bullet_Behavior : MonoBehaviour
     {
 
         GetComponent<Rigidbody2D>().velocity = - transform.right * speed;
+
+        Destroy(gameObject, 5f);
     }
 
     // Update is called once per frame

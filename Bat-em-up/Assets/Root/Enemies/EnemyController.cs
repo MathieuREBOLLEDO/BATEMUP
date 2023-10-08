@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Splines;
-using UnityEngine.UIElements;
 
 public class EnemyController : MonoBehaviour
 {
@@ -61,6 +60,15 @@ public class EnemyController : MonoBehaviour
         Fire();
     }
 
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Bouncing_Bullet"))
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Move()
     {
         if (waypoints.Length > 0 && currentWaypointIndex < waypoints.Length)
@@ -73,7 +81,7 @@ public class EnemyController : MonoBehaviour
                 currentWaypointIndex++;
 
 
-                
+
                 if (currentWaypointIndex >= waypoints.Length)
                 {
                     canShoot = true;
@@ -83,7 +91,7 @@ public class EnemyController : MonoBehaviour
                     //transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
                     //transform.rotation = Quaternion.LookRotation(player.transform.position - transform.position, Vector2.up*Quaternion.AngleAxis());
                 }
-                
+
 
             }
         }
@@ -103,7 +111,7 @@ public class EnemyController : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     var dir2 = player.transform.position - transform.position;
-                    var angle2 = Mathf.Atan2(dir2.y, dir2.x) * Mathf.Rad2Deg - 180 -25 + 25*i;
+                    var angle2 = Mathf.Atan2(dir2.y, dir2.x) * Mathf.Rad2Deg - 180 - 25 + 25 * i;
                     transform.rotation = Quaternion.AngleAxis(angle2, Vector3.forward);
 
                     GameObject tmpBullet = GameObject.Instantiate(bullet, weaponSpawnPoint.position, transform.rotation);
@@ -112,7 +120,7 @@ public class EnemyController : MonoBehaviour
 
                 }
                 //weaponSpawnPoint
-               // GameObject tmpBullet = GameObject.Instantiate(bullet, weaponSpawnPoint);
+                // GameObject tmpBullet = GameObject.Instantiate(bullet, weaponSpawnPoint);
                 // Implement enemy firing using enemyWeapon properties
                 nextFireTime = Time.time + enemyWeapon.fireInterval;
             }
