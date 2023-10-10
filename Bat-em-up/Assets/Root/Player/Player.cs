@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Events;
+using BulletPro;
 
 // Alias the UnityEngine.Debug class as Debug to avoid conflicts with System.Diagnostics.Debug
 
@@ -36,19 +38,26 @@ public class Player : MonoBehaviour
 
     [Header("Components")]
     [SerializeField] private Animator[] vehicleThrusters;
-    [SerializeField] private GameObject muzzleLeft;
-    [SerializeField] private GameObject muzzleRight;
-    [SerializeField] private GameObject muzzleCenter;
-    [SerializeField] private GameObject bulletPrefab;
+    //[SerializeField] private GameObject muzzleLeft;
+    //[SerializeField] private GameObject muzzleRight;
+    //[SerializeField] private GameObject muzzleCenter;
+    //[SerializeField] private GameObject bulletPrefab;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Rigidbody2D rigidBody;
-    [SerializeField] private PolygonCollider2D polygonCollider;
+
+    [Header("HUD")]
+    //[erializeField] private GameObject lifeCounter; 
 
     [Header("Camera")]
     [SerializeField] private float topBottomOffset = 0.5f;
     [SerializeField] private float rightOffset = 5f;
     [SerializeField] private float leftOffset = 0.5f;
     private Vector2 screenBounds;
+
+    [Header("Events")]
+    public UnityEvent onHurt;
+    public UnityEvent onDeath;
+    public UnityEvent onRespawn;
 
     float fireTimer;
     float attackTimer;
@@ -99,15 +108,16 @@ public class Player : MonoBehaviour
         newPosition.y = Mathf.Clamp(newPosition.y, -screenBounds.y + topBottomOffset, screenBounds.y - topBottomOffset);
         transform.position = newPosition;
     }
-
+    /*
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Handle collision with objects
         if (collision.gameObject.GetComponent<CircleCollider2D>())
         {
             Destroy(collision.gameObject);
+            Hurt();
         }
-    }
+    }*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -115,12 +125,6 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
         {
             CallEventAttack(collision);
-        }
-        
-        else if( !collision.gameObject.CompareTag("Bouncing_Bullet") && polygonCollider.IsTouching(collision))
-        {
-            lifePoints--;
-            Destroy(collision.gameObject);
         }
     }
 
@@ -137,7 +141,9 @@ public class Player : MonoBehaviour
         // Handle player's movement based on input
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
-        rigidBody.velocity = new Vector2(inputX * maxSpeed, inputY * maxSpeed);
+
+        Vector2 inputVector = new Vector2(inputX, inputY).normalized;
+        rigidBody.velocity = inputVector * maxSpeed;
     }
 
     private void HandleThrusterAnimations()
@@ -204,5 +210,20 @@ public class Player : MonoBehaviour
         // Deactivate attack animation and reset attack state
         isAttacking = false;
         attackCollideValue = 0;
+    }
+
+    public void Hurt()
+    {
+        lifePoints--;
+        onHurt.Invoke();
+        if (lifePoints < 0)
+            Die();
+    }
+
+    private void Die()
+    {
+        GetComponent<BulletReceiver>().enabled = false;
+        
+        onDeath.Invoke();
     }
 }
