@@ -238,6 +238,38 @@ PrefabInstance:
       propertyPath: m_Name
       value: P_Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2938981614179176249, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: collisionTagsFoldout
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: lifePoints
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: onHurt.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: onHurt.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: onHurt.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: onHurt.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpdateCounter
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: onHurt.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: LifeCounter, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2961817767560714643, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
+      propertyPath: onHurt.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4028935610344342450, guid: e67d9663a7e4e0c4ebe3157ad4b94581, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
