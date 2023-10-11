@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player_Bullet : MonoBehaviour
 {
+    public static Player_Bullet instance_PBullet;
+
     // Variables for bullet state and behavior
     public bool inIdle = true;              // Indicates if the bullet is in idle state
     public bool wasHit = false;            // Indicates if the bullet was hit
@@ -38,10 +40,38 @@ public class Player_Bullet : MonoBehaviour
     private Vector3 targetPosition;        // Target position for bullet movement
     private float currentSpeed;            // Current speed of the bullet
 
+
+
     private void Awake()
     {
         initialScale = transform.localScale.x;
+        // Check if an instance of Player already exists.
+        if (instance_PBullet == null)
+        {
+            // If not, set this instance as the Singleton instance.
+            instance_PBullet = this;
+
+            // Ensure that this GameObject persists across scenes.
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            // If an instance already exists, destroy this duplicate.
+            Destroy(gameObject);
+        }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Boss>())
+        {
+            collision.GetComponent<Boss>().Hurt(bulletGameObject.transform.localScale.x);
+            Vector2 collisionNormal =(transform.position - collision.transform.position).normalized;
+
+            rigidBody.velocity = Vector2.Reflect(currentVelocity, collisionNormal);
+        }
+    }
+
 
     private void Start()
     {
