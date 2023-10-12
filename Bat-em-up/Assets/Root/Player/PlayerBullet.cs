@@ -15,7 +15,7 @@ public class PlayerBullet : MonoBehaviour
     public bool startingSlowDown = false;  // Indicates if the bullet is starting to slow down
     public float timeBeforeSlowDown = 0.25f; // Time before the bullet starts to slow down
     public float smoothTime = 0.1f;         // Smooth time for velocity adjustments
-    private Player player;               // Reference to the player's transform
+    //private Player player;               // Reference to the player's transform
 
     // Variables for bullet properties
     public float power = 15f;                // Bullet power
@@ -116,8 +116,8 @@ public class PlayerBullet : MonoBehaviour
         if (inIdle)
         {
             // Handle behavior when the bullet is in idle state
-            Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
-            targetPosition = player.transform.position - directionToPlayer * 0.05f;
+            Vector3 directionToPlayer = (pInstance.playerInstance.transform.position - transform.position).normalized;
+            targetPosition = pInstance.playerInstance.transform.position - directionToPlayer * 0.05f;
             Vector2 desiredVelocity = (targetPosition - transform.position).normalized * maxSpeed;
             Vector2 smoothedVelocity = Vector2.SmoothDamp(rigidBody.velocity, desiredVelocity, ref currentVelocity, smoothTime);
             rigidBody.velocity = smoothedVelocity;

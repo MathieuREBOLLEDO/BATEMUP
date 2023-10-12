@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class LifeCounter : MonoBehaviour
 {
-
-
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private GetPlayerInstance pInstance;
 
