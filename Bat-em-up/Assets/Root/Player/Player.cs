@@ -135,7 +135,13 @@ public class Player : MonoBehaviour
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
 
-        Vector2 inputVector = new Vector2(inputX, inputY).normalized;
+        Vector2 inputVector = new Vector2(inputX, inputY);
+
+        if (inputVector.magnitude > 1)
+        {
+            inputVector.Normalize();
+        }
+
         rigidBody.velocity = inputVector * movementSpeed;
     }
 
