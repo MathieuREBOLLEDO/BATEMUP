@@ -3,7 +3,13 @@ guid: 67fcf9169f394164386829508bbd4ccd
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - instPlayer: {fileID: 11400000, guid: 8f361d735d751284083e6d6958c287aa, type: 2}
+  - weaponGO: {instanceID: 0}
+  - weaponAnimator: {instanceID: 0}
+  - weaponSwingFXAnimator: {instanceID: 0}
+  - spriteRenderer: {instanceID: 0}
+  - rigidBody: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -6,8 +6,9 @@ using Unity.VisualScripting;
 
 public class DebugUI : MonoBehaviour
 {
-    public Player_Bullet p_bullet;
-    public Player player;
+    [SerializeField] private GetBulletInstance instBullet;
+    [SerializeField] private GetPlayerInstance instPlayer;
+
 
     public TextMeshProUGUI [] texts;
     
@@ -15,7 +16,7 @@ public class DebugUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        texts[0].text = "Lerp Time : " + p_bullet.lerpTime.ToString();
-        texts[1].text = "Velocity : " + ((int)p_bullet.currentVelocity.magnitude).ToString();
+        texts[0].text = "Lerp Time : " + instBullet.bulletInstance.lerpTime.ToString();
+        texts[1].text = "Velocity : " + ((int)instBullet.bulletInstance.currentVelocity.magnitude).ToString();
     }
 }

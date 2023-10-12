@@ -6,23 +6,31 @@ using BulletPro;
 
 public class Player : MonoBehaviour
 {
-    public static Player instance;
+    [SerializeField] private GetPlayerInstance instPlayer;
+    /*
+    [Header("Key Binding")]
+    public KeyCode shotButton = KeyCode.LeftShift;
+    public KeyCode left = KeyCode.LeftArrow;
+    public KeyCode right = KeyCode.RightArrow;
+    public KeyCode up = KeyCode.UpArrow;
+    public KeyCode down = KeyCode.DownArrow;
+    */
 
     [Header("Stats_Player")]
     public int lifePoints = 5;
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float maxSpeed = 10f;
-
+    /*
     [Header("Weapons")]
     [SerializeField] private float fireRate = 0.25f;
     [SerializeField] private float fireDamage = 10f;
     [SerializeField] private float bulletSpeed = 15f;
-
+    */
     [SerializeField] private float attackRate = 0.5f;
     [SerializeField] private float attackDamage = 20f;
     [SerializeField] private float attackPower = 15f;
     private float nextAttack = 0f;
-
+    
     [Header("Weapon Component")]
     [SerializeField] private GameObject weaponGO;
     [SerializeField] private Animator weaponAnimator;
@@ -37,16 +45,14 @@ public class Player : MonoBehaviour
     [SerializeField] private bool isDead = false;
 
     [Header("Components")]
-    [SerializeField] private Animator[] vehicleThrusters;
+    //[SerializeField] private Animator[] vehicleThrusters;
     //[SerializeField] private GameObject muzzleLeft;
     //[SerializeField] private GameObject muzzleRight;
     //[SerializeField] private GameObject muzzleCenter;
     //[SerializeField] private GameObject bulletPrefab;
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rigidBody;
-
-    [Header("HUD")]
-    //[erializeField] private GameObject lifeCounter; 
 
     [Header("Camera")]
     [SerializeField] private float topBottomOffset = 0.5f;
@@ -64,20 +70,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        // Check if an instance of Player already exists.
-        if (instance == null)
-        {
-            // If not, set this instance as the Singleton instance.
-            instance = this;
-
-            // Ensure that this GameObject persists across scenes.
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            // If an instance already exists, destroy this duplicate.
-            Destroy(gameObject);
-        }
+        instPlayer.playerInstance = this;
     }
 
     void Start()
@@ -94,7 +87,7 @@ public class Player : MonoBehaviour
         HandleMovement();
 
         // Handle thruster animations
-        HandleThrusterAnimations();
+        HandleAnimations();
 
         // Handle player's attacks
         HandleAttack();
@@ -142,13 +135,22 @@ public class Player : MonoBehaviour
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
 
-        Vector2 inputVector = new Vector2(inputX, inputY).normalized;
-        rigidBody.velocity = inputVector * maxSpeed;
+        Vector2 inputVector = new Vector2(inputX, inputY);
+
+        if (inputVector.magnitude > 1)
+        {
+            inputVector.Normalize();
+        }
+
+        rigidBody.velocity = inputVector * movementSpeed;
     }
 
-    private void HandleThrusterAnimations()
+    private void HandleAnimations()
     {
+
+        animator.SetFloat("HorizMovement",Input.GetAxis("Horizontal"));
         // Update thruster animations based on player's input
+        /*
         bool isMovingForward = Input.GetAxis("Horizontal") > 0;
         bool isMovingBackward = Input.GetAxis("Horizontal") < 0;
         bool isMovingDown = Input.GetAxis("Vertical") < 0;
@@ -161,6 +163,7 @@ public class Player : MonoBehaviour
         vehicleThrusters[3].SetBool("Moving", isMovingBackward);
         vehicleThrusters[4].SetBool("Moving", isMovingDown);
         vehicleThrusters[5].SetBool("Moving", isMovingUp);
+        */
     }
 
     private void HandleAttack()
@@ -188,11 +191,11 @@ public class Player : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y).normalized;
 
-        if (collision.GetComponent<Player_Bullet>() && attackCollideValue == 0)
+        if (collision.GetComponent<PlayerBullet>() && attackCollideValue == 0)
         {
             attackCollideValue++;
             // Trigger hit event on the collided bullet
-            collision.GetComponent<Player_Bullet>().hitEvent(direction);
+            collision.GetComponent<PlayerBullet>().hitEvent(direction);
             Time.timeScale = 0.1f;
             Invoke("EndImpactEffect", Time.deltaTime);
         }
