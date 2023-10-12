@@ -33,7 +33,7 @@ public class EnemyController : MonoBehaviour
         weaponSpawnPoint = muzzle;
 
         // Access the Player Singleton instance.
-        player = Player.instance;
+       // player = Player.instance;
 
         if (enemyBehavior.behavior == 0)
         {

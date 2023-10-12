@@ -8408,8 +8408,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd2db050e0ec3c4399bd6905d7bd758, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  p_bullet: {fileID: 0}
-  player: {fileID: 0}
+  instBullet: {fileID: 11400000, guid: a9a368bdec336f347a4d2d6c873a0f48, type: 2}
+  instPlayer: {fileID: 11400000, guid: 8f361d735d751284083e6d6958c287aa, type: 2}
   texts:
   - {fileID: 1718341246039494903}
   - {fileID: 7603530181393246506}

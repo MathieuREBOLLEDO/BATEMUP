@@ -4,20 +4,19 @@ using UnityEngine;
 public class LifeCounter : MonoBehaviour
 {
 
+
     [SerializeField] private TextMeshProUGUI text;
-    private Player playerInstance;
+    [SerializeField] private GetPlayerInstance pInstance;
 
 
     void Start()
-    {
-        playerInstance = Player.instance;
+    {        
         UpdateCounter();
-
     }
 
     public void UpdateCounter()
     {
-        text.SetText("x " + playerInstance.lifePoints);
+        text.SetText("x " + pInstance.playerInstance.lifePoints);
     }
 
 }

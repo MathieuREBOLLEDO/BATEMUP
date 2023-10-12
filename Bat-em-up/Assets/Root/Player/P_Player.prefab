@@ -48,7 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67fcf9169f394164386829508bbd4ccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifePoints: 100
+  instPlayer: {fileID: 11400000, guid: 8f361d735d751284083e6d6958c287aa, type: 2}
+  lifePoints: 3
   movementSpeed: 5
   maxSpeed: 25
   fireRate: 0.45
@@ -72,15 +73,32 @@ MonoBehaviour:
   - {fileID: 6768285736500889747}
   - {fileID: 3733486977886412423}
   - {fileID: 3243484199386495920}
-  muzzleLeft: {fileID: 0}
-  muzzleRight: {fileID: 0}
-  muzzleCenter: {fileID: 0}
-  bulletPrefab: {fileID: 0}
   spriteRenderer: {fileID: 0}
   rigidBody: {fileID: 537427155886566234}
   topBottomOffset: 0.5
   rightOffset: 1
   leftOffset: 0.5
+  onHurt:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: LifeCounter, Assembly-CSharp
+        m_MethodName: UpdateCounter
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  onRespawn:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2938981614179176249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,7 +148,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   parentSyncFoldout: 0
-  collisionTagsFoldout: 1
+  collisionTagsFoldout: 0
   advancedEventsFoldout: 1
   useDefaultGizmoColor: 1
   gizmoColor: {r: 0, g: 0, b: 0, a: 1}

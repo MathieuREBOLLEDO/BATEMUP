@@ -6,7 +6,7 @@ using BulletPro;
 
 public class Player : MonoBehaviour
 {
-    public static Player instance;
+    [SerializeField] private GetPlayerInstance instPlayer;
 
     [Header("Stats_Player")]
     public int lifePoints = 5;
@@ -64,20 +64,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        // Check if an instance of Player already exists.
-        if (instance == null)
-        {
-            // If not, set this instance as the Singleton instance.
-            instance = this;
-
-            // Ensure that this GameObject persists across scenes.
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            // If an instance already exists, destroy this duplicate.
-            Destroy(gameObject);
-        }
+        instPlayer.playerInstance = this;
     }
 
     void Start()
@@ -143,7 +130,7 @@ public class Player : MonoBehaviour
         float inputY = Input.GetAxis("Vertical");
 
         Vector2 inputVector = new Vector2(inputX, inputY).normalized;
-        rigidBody.velocity = inputVector * maxSpeed;
+        rigidBody.velocity = inputVector * movementSpeed;
     }
 
     private void HandleThrusterAnimations()
@@ -188,11 +175,11 @@ public class Player : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y).normalized;
 
-        if (collision.GetComponent<Player_Bullet>() && attackCollideValue == 0)
+        if (collision.GetComponent<PlayerBullet>() && attackCollideValue == 0)
         {
             attackCollideValue++;
             // Trigger hit event on the collided bullet
-            collision.GetComponent<Player_Bullet>().hitEvent(direction);
+            collision.GetComponent<PlayerBullet>().hitEvent(direction);
             Time.timeScale = 0.1f;
             Invoke("EndImpactEffect", Time.deltaTime);
         }
