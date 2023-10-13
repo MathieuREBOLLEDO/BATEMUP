@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerBullet : MonoBehaviour
+public class PlayerBullet : MonoBehaviour, IStrikeable
 {
     //public static Player_Bullet instance_PBullet;
 
@@ -126,6 +126,10 @@ public class PlayerBullet : MonoBehaviour
         currentVelocity = rigidBody.velocity;
     }
 
+    public void Striking(Vector2 dir)
+    {
+
+    }
     public void hitEvent(Vector2 direction)
     {
         // Handle behavior when the bullet is hit
