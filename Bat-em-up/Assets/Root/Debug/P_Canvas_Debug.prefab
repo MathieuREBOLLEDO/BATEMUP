@@ -1008,7 +1008,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Bullet
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1442,7 +1442,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 'Player
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1823,7 +1825,7 @@ GameObject:
   - component: {fileID: 6823334355866725005}
   - component: {fileID: 5583921218035045244}
   m_Layer: 5
-  m_Name: Life
+  m_Name: Velocity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4509,7 +4511,7 @@ GameObject:
   - component: {fileID: 756133493089590742}
   - component: {fileID: 1763664392508216757}
   m_Layer: 5
-  m_Name: Scale
+  m_Name: FireRate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8408,11 +8410,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd2db050e0ec3c4399bd6905d7bd758, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  instBullet: {fileID: 11400000, guid: a9a368bdec336f347a4d2d6c873a0f48, type: 2}
   instPlayer: {fileID: 11400000, guid: 8f361d735d751284083e6d6958c287aa, type: 2}
-  texts:
-  - {fileID: 1718341246039494903}
+  playerTexts:
+  - {fileID: 5583921218035045244}
+  - {fileID: 1763664392508216757}
+  instBullet: {fileID: 11400000, guid: a9a368bdec336f347a4d2d6c873a0f48, type: 2}
+  bulletTexts:
   - {fileID: 7603530181393246506}
+  - {fileID: 2428132714967686506}
+  - {fileID: 1718341246039494903}
 --- !u!1 &3524013771819083211
 GameObject:
   m_ObjectHideFlags: 0

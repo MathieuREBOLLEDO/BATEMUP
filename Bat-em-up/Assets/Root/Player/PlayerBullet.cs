@@ -126,10 +126,19 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         currentVelocity = rigidBody.velocity;
     }
 
-    public void Striking(Vector2 dir)
+    public void Striking(Vector2 direction)
     {
-
+        inIdle = false;
+        wasHit = true;
+        startingSlowDown = false;
+        velocityTimeElapsed = 0;
+        float clampedScale = Mathf.Clamp(transform.localScale.x * scaleUpFactor, minSize, maxSize);
+        transform.localScale = Vector3.one * clampedScale;
+        currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
+        rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
+        lerpTime = 0;
     }
+    /*
     public void hitEvent(Vector2 direction)
     {
         // Handle behavior when the bullet is hit
@@ -142,5 +151,5 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
         rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
         lerpTime = 0;
-    }
+    }*/
 }

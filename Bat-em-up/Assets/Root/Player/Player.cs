@@ -18,15 +18,12 @@ public class Player : MonoBehaviour
 
     [Header("Stats_Player")]
     public int lifePoints = 5;
+    public float invulnerabilityTime = 0.5f;
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float maxSpeed = 10f;
-    /*
-    [Header("Weapons")]
-    [SerializeField] private float fireRate = 0.25f;
-    [SerializeField] private float fireDamage = 10f;
-    [SerializeField] private float bulletSpeed = 15f;
-    */
-    [SerializeField] private float attackRate = 0.5f;
+
+    public float attackRate = 0.5f;
+    public float animationSpeed = 1.75f;
     [SerializeField] private float attackDamage = 20f;
     [SerializeField] private float attackPower = 15f;
     private float nextAttack = 0f;
@@ -41,15 +38,10 @@ public class Player : MonoBehaviour
     [SerializeField] private bool canBeDamaged = true;
     [SerializeField] private bool isAttacking = false;
     private int attackCollideValue = 0;
-    [SerializeField] private bool isHit = false;
+    [SerializeField] private bool isHurt = false;
     [SerializeField] private bool isDead = false;
 
     [Header("Components")]
-    //[SerializeField] private Animator[] vehicleThrusters;
-    //[SerializeField] private GameObject muzzleLeft;
-    //[SerializeField] private GameObject muzzleRight;
-    //[SerializeField] private GameObject muzzleCenter;
-    //[SerializeField] private GameObject bulletPrefab;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rigidBody;
@@ -79,6 +71,7 @@ public class Player : MonoBehaviour
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
         screenBounds = new Vector2(camWidth, camHeight);
+        //weaponSwingFXAnimator.speed = animationSpeed;
     }
 
     void Update()
@@ -101,16 +94,6 @@ public class Player : MonoBehaviour
         newPosition.y = Mathf.Clamp(newPosition.y, -screenBounds.y + topBottomOffset, screenBounds.y - topBottomOffset);
         transform.position = newPosition;
     }
-    /*
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Handle collision with objects
-        if (collision.gameObject.GetComponent<CircleCollider2D>())
-        {
-            Destroy(collision.gameObject);
-            Hurt();
-        }
-    }*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -147,23 +130,8 @@ public class Player : MonoBehaviour
 
     private void HandleAnimations()
     {
-
         animator.SetFloat("HorizMovement",Input.GetAxis("Horizontal"));
-        // Update thruster animations based on player's input
-        /*
-        bool isMovingForward = Input.GetAxis("Horizontal") > 0;
-        bool isMovingBackward = Input.GetAxis("Horizontal") < 0;
-        bool isMovingDown = Input.GetAxis("Vertical") < 0;
-        bool isMovingUp = Input.GetAxis("Vertical") > 0;
-
-        // Set animation parameters for vehicle thrusters
-        vehicleThrusters[0].SetBool("Moving", isMovingForward);
-        vehicleThrusters[1].SetBool("Moving", isMovingForward);
-        vehicleThrusters[2].SetBool("Moving", isMovingBackward);
-        vehicleThrusters[3].SetBool("Moving", isMovingBackward);
-        vehicleThrusters[4].SetBool("Moving", isMovingDown);
-        vehicleThrusters[5].SetBool("Moving", isMovingUp);
-        */
+        
     }
 
     private void HandleAttack()
@@ -178,6 +146,7 @@ public class Player : MonoBehaviour
                 isAttacking = true;
                 // Activate attack animation and effect
                 weaponSwingFXAnimator.SetTrigger("Attacking");
+
                 Invoke("EndAttack", 0.25f);
 
                 attackTimer = 0f;
@@ -191,6 +160,15 @@ public class Player : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y).normalized;
 
+        if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null && attackCollideValue == 0 )
+        {
+            attackCollideValue++;
+            // Trigger hit event on the collided bullet
+            collision.GetComponent<IStrikeable>().Striking(direction);
+            Time.timeScale = 0.1f;
+            Invoke("EndImpactEffect", Time.deltaTime);
+        }
+        /*
         if (collision.GetComponent<PlayerBullet>() && attackCollideValue == 0)
         {
             attackCollideValue++;
@@ -199,6 +177,7 @@ public class Player : MonoBehaviour
             Time.timeScale = 0.1f;
             Invoke("EndImpactEffect", Time.deltaTime);
         }
+        */
 
     }
 
@@ -217,10 +196,21 @@ public class Player : MonoBehaviour
 
     public void Hurt()
     {
-        lifePoints--;
-        onHurt.Invoke();
-        if (lifePoints < 0)
-            Die();
+        if (!isHurt)
+        {
+            isHurt = true;
+            lifePoints--;
+            onHurt.Invoke();
+            Invoke("StopInvulnerable", invulnerabilityTime);
+            if (lifePoints < 0)
+                Die();
+        }
+        
+    }
+
+    private void StopInvulnerable()
+    {
+        isHurt = false;
     }
 
     private void Die()

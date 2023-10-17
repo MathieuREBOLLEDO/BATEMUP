@@ -17,11 +17,6 @@ public class BounceEffect : MonoBehaviour
         //Debug.Log("Screen Bounds : " + screenBounds);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("Had collision");
-    }
-
     void Update()
     {
         // Move the ball based on its velocity
