@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections;
 using BulletPro;
+
 
 // Alias the UnityEngine.Debug class as Debug to avoid conflicts with System.Diagnostics.Debug
 
@@ -18,7 +20,7 @@ public class Player : MonoBehaviour
 
     [Header("Stats_Player")]
     public int lifePoints = 5;
-    public float invulnerabilityTime = 0.5f;
+    public float invulnerabilityDuration = 0.5f;
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float maxSpeed = 10f;
 
@@ -40,9 +42,13 @@ public class Player : MonoBehaviour
     private int attackCollideValue = 0;
     [SerializeField] private bool isHurt = false;
     [SerializeField] private bool isDead = false;
+    [SerializeField] private bool isFlickering = false;
+    //public float flickerDuration = 0.2f;
+    public float flickerSpeed = 10f;
 
     [Header("Components")]
     [SerializeField] private SpriteRenderer spriteRenderer;
+    private Color initColor;
     [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rigidBody;
 
@@ -71,6 +77,7 @@ public class Player : MonoBehaviour
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
         screenBounds = new Vector2(camWidth, camHeight);
+        initColor = spriteRenderer.material.color;
         //weaponSwingFXAnimator.speed = animationSpeed;
     }
 
@@ -80,7 +87,7 @@ public class Player : MonoBehaviour
         HandleMovement();
 
         // Handle thruster animations
-        HandleAnimations();
+        HandleAnimationMovement();
 
         // Handle player's attacks
         HandleAttack();
@@ -95,22 +102,6 @@ public class Player : MonoBehaviour
         transform.position = newPosition;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        // Call event for player's attack when colliding with certain objects
-        if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
-        {
-            CallEventAttack(collision);
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
-        {
-            CallEventAttack(collision);
-        }
-    }
 
     private void HandleMovement()
     {
@@ -128,10 +119,28 @@ public class Player : MonoBehaviour
         rigidBody.velocity = inputVector * movementSpeed;
     }
 
-    private void HandleAnimations()
+    private void HandleAnimationMovement()
     {
-        animator.SetFloat("HorizMovement",Input.GetAxis("Horizontal"));
-        
+        animator.SetFloat("HorizMovement", Input.GetAxis("Horizontal"));
+
+    }
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Call event for player's attack when colliding with certain objects
+        if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
+        {
+            CallEventAttack(collision);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
+        {
+            CallEventAttack(collision);
+        }
     }
 
     private void HandleAttack()
@@ -201,11 +210,31 @@ public class Player : MonoBehaviour
             isHurt = true;
             lifePoints--;
             onHurt.Invoke();
-            Invoke("StopInvulnerable", invulnerabilityTime);
             if (lifePoints < 0)
                 Die();
+            if (!isFlickering)
+            {
+                isFlickering = true;
+                StartCoroutine(Flicker());
+            }
+            
+            Invoke("StopInvulnerable", invulnerabilityDuration);
+            
         }
         
+    }
+
+    IEnumerator Flicker()
+    {
+        for (float t = 0; t < invulnerabilityDuration; t += Time.deltaTime)
+        {
+            float alpha = Mathf.Sin(flickerSpeed * t) > 0 ? 0 : 1;
+            Color flickerColor = new Color(initColor.r, initColor.g, initColor.b, alpha);
+            spriteRenderer.material.color = flickerColor;
+            yield return null;
+        }
+        spriteRenderer.material.color = initColor;
+        isFlickering = false;
     }
 
     private void StopInvulnerable()
@@ -215,7 +244,7 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        GetComponent<BulletReceiver>().enabled = false;
+        //GetComponent<BulletReceiver>().enabled = false;
         
         onDeath.Invoke();
     }
