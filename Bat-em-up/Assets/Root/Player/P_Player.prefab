@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instPlayer: {fileID: 11400000, guid: 8f361d735d751284083e6d6958c287aa, type: 2}
   lifePoints: 3
+  invulnerabilityDuration: 0.5
   movementSpeed: 15
   maxSpeed: 25
   attackRate: 0.5
@@ -64,6 +65,8 @@ MonoBehaviour:
   isAttacking: 0
   isHurt: 0
   isDead: 0
+  isFlickering: 0
+  flickerSpeed: 100
   spriteRenderer: {fileID: 7541279175064150458}
   animator: {fileID: 4441119713083200260}
   rigidBody: {fileID: 537427155886566234}
@@ -293,6 +296,15 @@ TrailRenderer:
         value: 1
         inSlope: 0
         outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.45495716
+        value: 0.5673815
+        inSlope: -1.487827
+        outSlope: -1.487827
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334

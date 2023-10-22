@@ -91,6 +91,11 @@ public class Player : MonoBehaviour
 
         // Handle player's attacks
         HandleAttack();
+
+        if(Input.GetButton("Jump"))
+        {
+            Hurt();
+        }
     }
 
     void LateUpdate()

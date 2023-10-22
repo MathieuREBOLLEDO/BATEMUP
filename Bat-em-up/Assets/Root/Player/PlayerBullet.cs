@@ -39,6 +39,8 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     [SerializeField] private Rigidbody2D rigidBody; // Reference to the bullet's rigidbody
     public Vector2 currentVelocity = Vector2.zero; // Current velocity of the bullet
 
+    [SerializeField] private ParticleSystem explosion;
+
     private float initialScale;            // Initial scale of the bullet
     private Vector3 targetPosition;        // Target position for bullet movement
     private float currentSpeed;            // Current speed of the bullet
@@ -61,6 +63,8 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             Vector2 collisionNormal =(transform.position - collision.transform.position).normalized;
 
             rigidBody.velocity = Vector2.Reflect(currentVelocity, collisionNormal);
+
+            GameObject.Instantiate(explosion, transform.position, Quaternion.identity);
         }
     }
 
