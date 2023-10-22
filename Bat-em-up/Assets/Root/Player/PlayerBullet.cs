@@ -27,6 +27,10 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     public float minSize = 0.5f;           // Minimum bullet size
     public float maxSize = 7f;             // Maximum bullet size
     public float scaleUpFactor = 1.4f;     // Factor to scale up the bullet
+    [SerializeField] private TrailRenderer trail;
+    public float trailMinSize = 0.1f;
+    public float trailMaxSize = 0.5f;
+
 
     [Header("Time")]
     public float maxSlowDuration = 15f;    // Maximum slow duration
@@ -40,6 +44,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     public Vector2 currentVelocity = Vector2.zero; // Current velocity of the bullet
 
     [SerializeField] private ParticleSystem explosion;
+    [SerializeField] private ParticleSystem shockWave;
 
     private float initialScale;            // Initial scale of the bullet
     private Vector3 targetPosition;        // Target position for bullet movement
@@ -52,6 +57,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         initialScale = transform.localScale.x;
 
         bInstance.bulletInstance = this;
+
         
     }
 
@@ -105,9 +111,11 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
                 float newScale = Mathf.Lerp(maxSize, minSize, t);
                 float newSpeed = Mathf.Lerp(maxSpeed, minSpeed, t);
+                float newTrailSize = Mathf.Lerp(trailMaxSize, trailMinSize, t);
 
                 transform.localScale = Vector3.one * newScale;
                 rigidBody.velocity = rigidBody.velocity.normalized * newSpeed;
+                trail.time = newTrailSize;
                 currentVelocity = rigidBody.velocity;
             }
             else
@@ -119,6 +127,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         }
         if (inIdle)
         {
+            
             // Handle behavior when the bullet is in idle state
             Vector3 directionToPlayer = (pInstance.playerInstance.transform.position - transform.position).normalized;
             targetPosition = pInstance.playerInstance.transform.position - directionToPlayer * 0.05f;
@@ -132,6 +141,8 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
     public void Striking(Vector2 direction)
     {
+
+        GameObject.Instantiate(shockWave, transform.position,Quaternion.identity);
         inIdle = false;
         wasHit = true;
         startingSlowDown = false;
@@ -140,6 +151,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         transform.localScale = Vector3.one * clampedScale;
         currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
         rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
+        trail.time = Mathf.Lerp(trailMaxSize, trailMinSize, currentLerpTime);
         lerpTime = 0;
     }
     /*
