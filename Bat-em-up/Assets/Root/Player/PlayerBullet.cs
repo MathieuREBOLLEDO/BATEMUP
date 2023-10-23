@@ -27,7 +27,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     public float minSize = 0.5f;           // Minimum bullet size
     public float maxSize = 7f;             // Maximum bullet size
     public float scaleUpFactor = 1.4f;     // Factor to scale up the bullet
-    [SerializeField] private TrailRenderer trail;
+    
     public float trailMinSize = 0.1f;
     public float trailMaxSize = 0.5f;
 
@@ -43,8 +43,13 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     [SerializeField] private Rigidbody2D rigidBody; // Reference to the bullet's rigidbody
     public Vector2 currentVelocity = Vector2.zero; // Current velocity of the bullet
 
+
+    [Header ("VFX")]
     [SerializeField] private ParticleSystem explosion;
     [SerializeField] private ParticleSystem shockWave;
+
+    [SerializeField] private TrailRenderer prefabTrail;
+    private TrailRenderer trail;
 
     private float initialScale;            // Initial scale of the bullet
     private Vector3 targetPosition;        // Target position for bullet movement
@@ -78,7 +83,8 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     private void Start()
     {
         // Find the player's transform by name
-        
+        trail = GameObject.Instantiate(prefabTrail, transform.position, Quaternion.identity);
+
         rigidBody = GetComponent<Rigidbody2D>();
         initialScale = bulletGameObject.transform.localScale.x;
         rigidBody.velocity = new Vector2(-1, 0);
@@ -86,6 +92,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
     private void Update()
     {
+        trail.transform.position = transform.position;
         if (wasHit)
         {
             // Handle behavior when the bullet was hit

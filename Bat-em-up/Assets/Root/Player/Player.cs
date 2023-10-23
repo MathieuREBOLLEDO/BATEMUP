@@ -176,11 +176,13 @@ public class Player : MonoBehaviour
 
         if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null && attackCollideValue == 0 )
         {
+            
             attackCollideValue++;
             // Trigger hit event on the collided bullet
             collision.GetComponent<IStrikeable>().Striking(direction);
             Time.timeScale = 0.1f;
             Invoke("EndImpactEffect", Time.deltaTime);
+            
         }
         /*
         if (collision.GetComponent<PlayerBullet>() && attackCollideValue == 0)
@@ -199,6 +201,7 @@ public class Player : MonoBehaviour
     {
         // Reset time scale to normal
         Time.timeScale = 1f;
+        CameraShaker.Invoke();
     }
 
     private void EndAttack()
