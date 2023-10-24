@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using static UnityEngine.GraphicsBuffer;
@@ -63,6 +64,9 @@ public class Player : MonoBehaviour
     public UnityEvent onHurt;
     public UnityEvent onDeath;
     public UnityEvent onRespawn;
+
+    private Dictionary<GameObject, bool> triggeredObjects = new Dictionary<GameObject, bool>();
+
 
     float fireTimer;
     float attackTimer;
@@ -148,18 +152,30 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Call event for player's attack when colliding with certain objects
-        if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null && isAttacking)
-        {
-            CallEventAttack(collision);
-        }
+        CheckTriggerForAttack(collision);
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null && isAttacking)
+        CheckTriggerForAttack(collision);
+    }
+
+    private void CheckTriggerForAttack(Collider2D collision)
+    {
+        if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null
+            && !triggeredObjects.ContainsKey(collision.gameObject)
+            && isAttacking)
         {
-            CallEventAttack(collision);
+            triggeredObjects.Add(collision.gameObject, true);
+            CallEventAttack(collision.gameObject);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (triggeredObjects.ContainsKey(collision.gameObject))
+        {
+            triggeredObjects.Remove(collision.gameObject);
         }
     }
 
@@ -183,16 +199,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void CallEventAttack(Collider2D collision)
+    private void CallEventAttack(GameObject other)
     {
-
-        if (attackCollideValue == 0)
+        if(triggeredObjects[other])
         {
-
             //Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             //Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y).normalized;
 
-           // Vector2 direction = (Vector2)(collision.transform.position - transform.position).normalized;
+            // Vector2 direction = (Vector2)(collision.transform.position - transform.position).normalized;
 
             Vector2 initialDirection = (bInstance.bulletInstance.transform.position - transform.position).normalized;
 
@@ -210,13 +224,13 @@ public class Player : MonoBehaviour
 
             attackCollideValue++;
             // Trigger hit event on the collided bullet
-            collision.GetComponent<IStrikeable>().Striking(finalDirection);
+            other.GetComponent<IStrikeable>().Striking(finalDirection);
             Time.timeScale = 0.1f;
             Invoke("EndImpactEffect", Time.deltaTime);
 
+            triggeredObjects[other] = false;
+
         }
-
-
     }
 
     private void EndImpactEffect()
