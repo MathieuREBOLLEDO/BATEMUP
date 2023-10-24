@@ -1,7 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
-using BulletPro;
+using static UnityEngine.GraphicsBuffer;
 
 
 // Alias the UnityEngine.Debug class as Debug to avoid conflicts with System.Diagnostics.Debug
@@ -9,6 +9,7 @@ using BulletPro;
 public class Player : MonoBehaviour
 {
     [SerializeField] private GetPlayerInstance instPlayer;
+    [SerializeField] private GetBulletInstance bInstance;
     /*
     [Header("Key Binding")]
     public KeyCode shotButton = KeyCode.LeftShift;
@@ -22,14 +23,12 @@ public class Player : MonoBehaviour
     public int lifePoints = 5;
     public float invulnerabilityDuration = 0.5f;
     [SerializeField] private float movementSpeed = 5f;
-    [SerializeField] private float maxSpeed = 10f;
+
 
     public float attackRate = 0.5f;
     public float animationSpeed = 1.75f;
-    [SerializeField] private float attackDamage = 20f;
-    [SerializeField] private float attackPower = 15f;
-    private float nextAttack = 0f;
-    
+    public float maxBounceAngle = 45f;
+
     [Header("Weapon Component")]
     [SerializeField] private GameObject weaponGO;
     [SerializeField] private Animator weaponAnimator;
@@ -51,6 +50,8 @@ public class Player : MonoBehaviour
     private Color initColor;
     [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rigidBody;
+
+    [SerializeField] private GameObject gizmoArrow;
 
     [Header("Camera")]
     [SerializeField] private float topBottomOffset = 0.5f;
@@ -83,6 +84,20 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        Vector2 initialDirection = ( bInstance.bulletInstance.transform.position- transform.position ).normalized;
+
+        float angle = Vector2.SignedAngle(transform.up, initialDirection);
+
+        // Get the sign of the angle
+        float sign = Mathf.Sign(angle);
+
+        // Clamp the absolute angle to the specified range
+        float clampedAngle = Mathf.Clamp(Mathf.Abs(angle), 0, maxBounceAngle);
+
+        // Calculate the final direction based on the clamped angle
+        Vector2 finalDirection = Quaternion.Euler(0, 0, sign * clampedAngle) * transform.up;
+        gizmoArrow.transform.up = finalDirection;
+
         // Handle player's movement
         HandleMovement();
 
@@ -92,7 +107,7 @@ public class Player : MonoBehaviour
         // Handle player's attacks
         HandleAttack();
 
-        if(Input.GetButton("Jump"))
+        if (Input.GetButton("Jump"))
         {
             Hurt();
         }
@@ -134,7 +149,7 @@ public class Player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // Call event for player's attack when colliding with certain objects
-        if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
+        if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null && isAttacking)
         {
             CallEventAttack(collision);
         }
@@ -142,7 +157,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Bouncing_Bullet") && isAttacking)
+        if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null && isAttacking)
         {
             CallEventAttack(collision);
         }
@@ -171,29 +186,36 @@ public class Player : MonoBehaviour
     private void CallEventAttack(Collider2D collision)
     {
 
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y).normalized;
+        if (attackCollideValue == 0)
+        {
 
-        if (collision.GetComponent<MonoBehaviour>() as IStrikeable != null && attackCollideValue == 0 )
-        {
-            
+            //Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //Vector2 direction = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y).normalized;
+
+           // Vector2 direction = (Vector2)(collision.transform.position - transform.position).normalized;
+
+            Vector2 initialDirection = (bInstance.bulletInstance.transform.position - transform.position).normalized;
+
+            float angle = Vector2.SignedAngle(transform.up, initialDirection);
+
+            // Get the sign of the angle
+            float sign = Mathf.Sign(angle);
+
+            // Clamp the absolute angle to the specified range
+            float clampedAngle = Mathf.Clamp(Mathf.Abs(angle), 0, maxBounceAngle);
+
+            // Calculate the final direction based on the clamped angle
+            Vector2 finalDirection = Quaternion.Euler(0, 0, sign * clampedAngle) * transform.up;
+
+
             attackCollideValue++;
             // Trigger hit event on the collided bullet
-            collision.GetComponent<IStrikeable>().Striking(direction);
+            collision.GetComponent<IStrikeable>().Striking(finalDirection);
             Time.timeScale = 0.1f;
             Invoke("EndImpactEffect", Time.deltaTime);
-            
+
         }
-        /*
-        if (collision.GetComponent<PlayerBullet>() && attackCollideValue == 0)
-        {
-            attackCollideValue++;
-            // Trigger hit event on the collided bullet
-            collision.GetComponent<PlayerBullet>().hitEvent(direction);
-            Time.timeScale = 0.1f;
-            Invoke("EndImpactEffect", Time.deltaTime);
-        }
-        */
+
 
     }
 
@@ -225,11 +247,11 @@ public class Player : MonoBehaviour
                 isFlickering = true;
                 StartCoroutine(Flicker());
             }
-            
+
             Invoke("StopInvulnerable", invulnerabilityDuration);
-            
+
         }
-        
+
     }
 
     IEnumerator Flicker()
@@ -253,7 +275,7 @@ public class Player : MonoBehaviour
     private void Die()
     {
         //GetComponent<BulletReceiver>().enabled = false;
-        
+
         onDeath.Invoke();
     }
 }
