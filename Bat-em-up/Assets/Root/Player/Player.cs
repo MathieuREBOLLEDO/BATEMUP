@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEngine.GraphicsBuffer;
 
 
 // Alias the UnityEngine.Debug class as Debug to avoid conflicts with System.Diagnostics.Debug
@@ -29,6 +27,7 @@ public class Player : MonoBehaviour
 
     public float attackRate = 0.5f;
     public float animationSpeed = 1.75f;
+    public float attackPower = 15f;
     public float maxBounceAngle = 45f;
 
     [Header("Weapon Component")]
@@ -53,6 +52,9 @@ public class Player : MonoBehaviour
     [SerializeField] private Rigidbody2D rigidBody;
 
     [SerializeField] private GameObject gizmoArrow;
+
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem shockWave;
 
     [Header("Camera")]
     [SerializeField] private float topBottomOffset = 0.5f;
@@ -143,21 +145,13 @@ public class Player : MonoBehaviour
     {
         if (activate)
         {
-            Vector2 initialDirection = (bInstance.bulletInstance.transform.position - transform.position).normalized;
-
-            float angle = Vector2.SignedAngle(transform.up, initialDirection);
-
-            // Get the sign of the angle
-            float sign = Mathf.Sign(angle);
-
-            // Clamp the absolute angle to the specified range
-            float clampedAngle = Mathf.Clamp(Mathf.Abs(angle), 0, maxBounceAngle);
-
-            // Calculate the final direction based on the clamped angle
-            Vector2 finalDirection = Quaternion.Euler(0, 0, sign * clampedAngle) * transform.up;
-            gizmoArrow.transform.up = finalDirection;
+            gizmoArrow.transform.up = CalculateClampAngle(bInstance.bulletInstance.transform);
         }
     }
+
+
+
+    #region Triggers
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -187,6 +181,7 @@ public class Player : MonoBehaviour
             triggeredObjects.Remove(collision.gameObject);
         }
     }
+    #endregion
 
     private void HandleAttack()
     {
@@ -210,30 +205,17 @@ public class Player : MonoBehaviour
 
     private void CallEventAttack(GameObject other)
     {
-        if(triggeredObjects[other])
-        {          
+        if (triggeredObjects[other])
+        {
+            GameObject.Instantiate(shockWave, other.transform.position, Quaternion.identity);
 
-            Vector2 initialDirection = (bInstance.bulletInstance.transform.position - transform.position).normalized;
+            // Trigger hit event on the collided bullet       
+            other.GetComponent<IStrikeable>().Striking(CalculateClampAngle(other.transform), attackPower);
 
-            float angle = Vector2.SignedAngle(transform.up, initialDirection);
-
-            // Get the sign of the angle
-            float sign = Mathf.Sign(angle);
-
-            // Clamp the absolute angle to the specified range
-            float clampedAngle = Mathf.Clamp(Mathf.Abs(angle), 0, maxBounceAngle);
-
-            // Calculate the final direction based on the clamped angle
-            Vector2 finalDirection = Quaternion.Euler(0, 0, sign * clampedAngle) * transform.up;
-
-
-            // Trigger hit event on the collided bullet
-            other.GetComponent<IStrikeable>().Striking(finalDirection);
             Time.timeScale = 0.1f;
             Invoke("EndImpactEffect", Time.deltaTime);
 
             triggeredObjects[other] = false;
-
         }
     }
 
@@ -294,5 +276,23 @@ public class Player : MonoBehaviour
         //GetComponent<BulletReceiver>().enabled = false;
 
         onDeath.Invoke();
+    }
+
+    private Vector2 CalculateClampAngle(Transform target)
+    {
+        Vector2 initialDirection = (target.position - transform.position).normalized;
+
+        float angle = Vector2.SignedAngle(transform.up, initialDirection);
+
+        // Get the sign of the angle
+        float sign = Mathf.Sign(angle);
+
+        // Clamp the absolute angle to the specified range
+        float clampedAngle = Mathf.Clamp(Mathf.Abs(angle), 0, maxBounceAngle);
+
+        // Calculate the final direction based on the clamped angle
+        Vector2 finalDirection = Quaternion.Euler(0, 0, sign * clampedAngle) * transform.up;
+
+        return finalDirection;
     }
 }

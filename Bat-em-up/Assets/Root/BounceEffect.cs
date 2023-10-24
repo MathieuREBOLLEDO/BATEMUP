@@ -3,6 +3,7 @@ using UnityEngine;
 public class BounceEffect : MonoBehaviour
 {
     [SerializeField] ParticleSystem particle;
+    public bool canBounceTopNDown = true;
     private Rigidbody2D rb;
     private Vector2 screenBounds;
 
@@ -32,7 +33,8 @@ public class BounceEffect : MonoBehaviour
             Instantiate(particle,newPosition,Quaternion.identity);
         }
 
-        if (newPosition.y < -screenBounds.y || newPosition.y > screenBounds.y)
+        if ((newPosition.y < -screenBounds.y || newPosition.y > screenBounds.y)
+            && canBounceTopNDown)
         {
             // Reflect the ball's velocity off the screen edge
             rb.velocity = new Vector2(rb.velocity.x, -rb.velocity.y);

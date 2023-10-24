@@ -56,6 +56,7 @@ MonoBehaviour:
   movementSpeed: 15
   attackRate: 0.5
   animationSpeed: 1.75
+  attackPower: 50
   maxBounceAngle: 45
   weaponGO: {fileID: 4672620915606494587}
   weaponAnimator: {fileID: 0}
@@ -71,6 +72,7 @@ MonoBehaviour:
   animator: {fileID: 4441119713083200260}
   rigidBody: {fileID: 537427155886566234}
   gizmoArrow: {fileID: 3853179124785071665}
+  shockWave: {fileID: 5507317667506963865, guid: 373d648cdce24114180fef353126c446, type: 3}
   topBottomOffset: 0.5
   rightOffset: 1
   leftOffset: 0.5

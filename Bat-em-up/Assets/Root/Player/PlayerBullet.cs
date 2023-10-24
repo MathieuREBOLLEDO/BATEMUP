@@ -46,10 +46,10 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
     [Header ("VFX")]
     [SerializeField] private ParticleSystem explosion;
-    [SerializeField] private ParticleSystem shockWave;
-
     [SerializeField] private TrailRenderer prefabTrail;
+    
     private TrailRenderer trail;
+
 
     private float initialScale;            // Initial scale of the bullet
     private Vector3 targetPosition;        // Target position for bullet movement
@@ -132,6 +132,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
                 currentSpeed = currentVelocity.magnitude;
             }
         }
+
         if (inIdle)
         {
             
@@ -146,10 +147,10 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         currentVelocity = rigidBody.velocity;
     }
 
-    public void Striking(Vector2 direction)
+    public void Striking(Vector2 direction, float speed)
     {
-
-        GameObject.Instantiate(shockWave, transform.position,Quaternion.identity);
+        // var speed not use for this element
+        
         inIdle = false;
         wasHit = true;
         startingSlowDown = false;
@@ -161,18 +162,4 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         trail.time = Mathf.Lerp(trailMaxSize, trailMinSize, currentLerpTime);
         lerpTime = 0;
     }
-    /*
-    public void hitEvent(Vector2 direction)
-    {
-        // Handle behavior when the bullet is hit
-        inIdle = false;
-        wasHit = true;
-        startingSlowDown = false;
-        velocityTimeElapsed = 0;
-        float clampedScale = Mathf.Clamp(transform.localScale.x * scaleUpFactor, minSize, maxSize);
-        transform.localScale = Vector3.one * clampedScale;
-        currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
-        rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
-        lerpTime = 0;
-    }*/
 }
