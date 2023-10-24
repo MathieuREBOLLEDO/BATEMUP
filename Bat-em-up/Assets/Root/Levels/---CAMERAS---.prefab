@@ -138,8 +138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8200acce410f1bb4ea506c333f07321b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionStrengh: {x: 0, y: 0, z: 0}
-  rotationStrengh: {x: 0, y: 0.25, z: 0.25}
+  positionStrengh: {x: 0.15, y: 0.15, z: 0}
+  rotationStrengh: {x: 0, y: 0, z: 0}
 --- !u!1 &7783611214350190716
 GameObject:
   m_ObjectHideFlags: 0
