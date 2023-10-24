@@ -184,7 +184,7 @@ GameObject:
   - component: {fileID: 6156543167307009825}
   - component: {fileID: 195319926866550561}
   m_Layer: 7
-  m_Name: Player_Bullet
+  m_Name: P_BulletPlayer
   m_TagString: Bouncing_Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
