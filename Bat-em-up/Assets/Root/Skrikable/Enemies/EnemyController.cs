@@ -3,8 +3,7 @@ using UnityEngine.Splines;
 
 public class EnemyController : MonoBehaviour
 {
-    public EnemyBehavior enemyBehavior;
-    public EnemyWeapon enemyWeapon;
+    public EnemyBehavior enemyBehavior; 
     //public EnemyMovementData movementData;
     public Transform[] waypoints;
     private Transform weaponSpawnPoint;
@@ -54,7 +53,7 @@ public class EnemyController : MonoBehaviour
         {
             Move();
         }
-        enemyWeapon.Fire();
+        //enemyWeapon.Fire();
 
 
         Fire();
@@ -116,13 +115,13 @@ public class EnemyController : MonoBehaviour
 
                     GameObject tmpBullet = GameObject.Instantiate(bullet, weaponSpawnPoint.position, transform.rotation);
                     //tmpBullet.transform.rotation = 
-                    tmpBullet.GetComponent<Bullet_Behavior>().speed = 5f;
+                    //tmpBullet.GetComponent<Bullet_Behavior>().speed = 5f;
 
                 }
                 //weaponSpawnPoint
                 // GameObject tmpBullet = GameObject.Instantiate(bullet, weaponSpawnPoint);
                 // Implement enemy firing using enemyWeapon properties
-                nextFireTime = Time.time + enemyWeapon.fireInterval;
+                //nextFireTime = Time.time + enemyWeapon.fireInterval;
             }
         }
     }
