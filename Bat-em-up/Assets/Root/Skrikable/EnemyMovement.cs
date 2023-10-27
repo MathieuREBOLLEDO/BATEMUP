@@ -11,15 +11,20 @@ public class EnemyMovement : ScriptableObject
     {
         statique,
         straight,
-        sin,
+        cos,
         waypoint,
         spline_waypoint,
     }
 
     public Behavior movement;
-    public Vector2 direction;
-    public float speed;
 
+    [Header ("Basic")]
+    public Vector2 direction = new Vector2(0,-1);
+    public float speed = 5f;
+
+    [Header("Sin")]
+    public float magnitude = 1f;
+    public Vector2 axis = new Vector2(1, 0);
     private Transform targetTransform;
 
     
@@ -42,6 +47,10 @@ public class EnemyMovement : ScriptableObject
                 ProcessStraight();
                 break;
 
+            case Behavior.cos:
+                ProcessCos();
+                break;
+
         }
         
     }
@@ -56,8 +65,12 @@ public class EnemyMovement : ScriptableObject
         targetTransform.position += (Vector3)direction * speed * Time.deltaTime; 
     }
 
-    private void ProcessSin()
+    private void ProcessCos()
     {
+        ProcessStraight();
+        float newMovement = Mathf.Cos(Time.time * speed) * magnitude;
+        Vector3 offset = axis * newMovement;
 
+        targetTransform.position += offset;
     }
 }

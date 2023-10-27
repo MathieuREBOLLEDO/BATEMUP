@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b6395e960681c49b245b3ed9b8d628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyMovement: {fileID: 11400000, guid: 428ef9623172c0543b1a00ced547d0cc, type: 2}
+  enemyMovement: {fileID: 11400000, guid: fe5eb917f5233184ebc20d8384723041, type: 2}
   scrol: {fileID: 11400000, guid: 856040b3c720f6b4891c7edff63f4620, type: 2}
 --- !u!50 &7418968675760131218
 Rigidbody2D:
