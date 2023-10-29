@@ -15,7 +15,6 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     public bool startingSlowDown = false;  // Indicates if the bullet is starting to slow down
     public float timeBeforeSlowDown = 0.25f; // Time before the bullet starts to slow down
     public float smoothTime = 0.1f;         // Smooth time for velocity adjustments
-    //private Player player;               // Reference to the player's transform
 
     // Variables for bullet properties
     public float power = 15f;                // Bullet power
@@ -39,7 +38,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
     // Variables for velocity and movement
     private float velocityTimeElapsed;     // Time elapsed for velocity adjustments
-    [SerializeField] GameObject bulletGameObject; // Reference to the bullet's game object
+   
     [SerializeField] private Rigidbody2D rigidBody; // Reference to the bullet's rigidbody
     public Vector2 currentVelocity = Vector2.zero; // Current velocity of the bullet
 
@@ -50,35 +49,15 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     
     private TrailRenderer trail;
 
-
-    private float initialScale;            // Initial scale of the bullet
     private Vector3 targetPosition;        // Target position for bullet movement
-    private float currentSpeed;            // Current speed of the bullet
 
 
 
     private void Awake()
     {
-        initialScale = transform.localScale.x;
 
         bInstance.bulletInstance = this;
-
-        
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.GetComponent<Boss>())
-        {
-            collision.GetComponent<Boss>().Hurt(bulletGameObject.transform.localScale.x);
-            Vector2 collisionNormal =(transform.position - collision.transform.position).normalized;
-
-            rigidBody.velocity = Vector2.Reflect(currentVelocity, collisionNormal);
-
-            GameObject.Instantiate(explosion, transform.position, Quaternion.identity);
-        }
-    }
-
 
     private void Start()
     {
@@ -86,7 +65,6 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         trail = GameObject.Instantiate(prefabTrail, transform.position, Quaternion.identity);
 
         rigidBody = GetComponent<Rigidbody2D>();
-        initialScale = bulletGameObject.transform.localScale.x;
         rigidBody.velocity = new Vector2(-1, 0);
     }
 
@@ -129,7 +107,6 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             {
                 inIdle = true;
                 startingSlowDown = false;
-                currentSpeed = currentVelocity.magnitude;
             }
         }
 
@@ -147,6 +124,19 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         currentVelocity = rigidBody.velocity;
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<MonoBehaviour>() as IHiteable != null)
+        {
+            Vector2 collisionNormal = (transform.position - collision.transform.position).normalized;
+            collision.GetComponent<IHiteable>().Hitting(collisionNormal, transform.localScale.x);
+            GameObject.Instantiate(explosion, transform.position, Quaternion.identity);
+
+            rigidBody.velocity = collisionNormal * rigidBody.velocity;
+            //rigidBody.velocity = Vector2.Reflect(currentVelocity, collisionNormal);
+        }
+    }
+
     public void Striking(Vector2 direction, float speed)
     {
         // var speed not use for this element
@@ -154,12 +144,16 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         inIdle = false;
         wasHit = true;
         startingSlowDown = false;
+
+        lerpTime = 0;
         velocityTimeElapsed = 0;
+
         float clampedScale = Mathf.Clamp(transform.localScale.x * scaleUpFactor, minSize, maxSize);
         transform.localScale = Vector3.one * clampedScale;
+
         currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
         rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
         trail.time = Mathf.Lerp(trailMaxSize, trailMinSize, currentLerpTime);
-        lerpTime = 0;
+        
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu (fileName ="NewScrolEffect", menuName ="Scrol/Scrol Effect")]
+[CreateAssetMenu (fileName ="NewScrolEffect", menuName ="Level/Scrol Effect")]
 public class ScrollingEffect : ScriptableObject
 {
     public float scrolSpeed = 5f;

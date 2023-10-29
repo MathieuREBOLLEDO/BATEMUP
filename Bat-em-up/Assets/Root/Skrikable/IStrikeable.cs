@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IStrikeable
 {
-    void Striking(Vector2 direction, float speed);
+    void Striking(Vector2 collisionNormal, float speed);
 }

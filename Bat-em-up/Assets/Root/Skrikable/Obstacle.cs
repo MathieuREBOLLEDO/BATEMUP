@@ -1,11 +1,12 @@
 using UnityEngine;
 
-public class Obstacle : MonoBehaviour, IStrikeable
+public class Obstacle : MonoBehaviour, IStrikeable, IHiteable
 {
     private Rigidbody2D rigidBody;
 
     [SerializeField] private EnemyMovement enemyMovement;
     [SerializeField] private ScrollingEffect scrol;
+    private InstanceLevelManager instanceLevel;
 
     private Vector2 screenBounds;
     private bool wasInScrrenBounds = false;
@@ -20,7 +21,11 @@ public class Obstacle : MonoBehaviour, IStrikeable
 
     void Start()
     {
+
+        scrol = instanceLevel.levelInstance.scrolType;
+        Debug.Log(scrol.name );
         rigidBody = GetComponent<Rigidbody2D>();
+
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
         screenBounds = new Vector2(camWidth, camHeight);
@@ -50,10 +55,10 @@ public class Obstacle : MonoBehaviour, IStrikeable
 
     private bool checkIsInScrren()
     {
-        if ( transform.position.x < -screenBounds.x
-            || transform.position.x > screenBounds.x
-            || transform.position.y > screenBounds.y
-            || transform.position.y < -screenBounds.y)
+        if ( transform.position.x < -screenBounds.x - 1
+            || transform.position.x > screenBounds.x + 1
+            || transform.position.y > screenBounds.y + 1
+            || transform.position.y < -screenBounds.y -1)
                         return false;
         else return true;
     }
@@ -61,6 +66,12 @@ public class Obstacle : MonoBehaviour, IStrikeable
     public void Striking(Vector2 dir, float speed)
     {
         rigidBody.velocity = dir * speed;
+        wasHit = true;
+    }
+
+    public void Hitting(Vector2 normal, float damage)
+    {
+        rigidBody.velocity = - normal * damage;
         wasHit = true;
     }
 }
