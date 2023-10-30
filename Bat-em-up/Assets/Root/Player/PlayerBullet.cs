@@ -1,5 +1,3 @@
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerBullet : MonoBehaviour, IStrikeable
@@ -10,48 +8,55 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     [SerializeField] private GetBulletInstance bInstance;
 
     // Variables for bullet state and behavior
-    public bool inIdle = true;              // Indicates if the bullet is in idle state
-    public bool wasHit = false;            // Indicates if the bullet was hit
-    public bool startingSlowDown = false;  // Indicates if the bullet is starting to slow down
-    public float timeBeforeSlowDown = 0.25f; // Time before the bullet starts to slow down
-    public float smoothTime = 0.1f;         // Smooth time for velocity adjustments
+    public bool inIdle = true;
+    public bool wasHit = false;
+    public bool startingSlowDown = false;
+    public float timeBeforeSlowDown = 0.25f;
+    public float smoothTime = 0.1f;
 
     // Variables for bullet properties
-    public float power = 15f;                // Bullet power
+    public float power = 15f;
     [Header("Speed")]
-    [SerializeField] public float minSpeed = 5f; // Minimum bullet speed
-    [SerializeField] public float maxSpeed = 30F; // Maximum bullet speed
+    [SerializeField] public float minSpeed = 5f;
+    [SerializeField] public float maxSpeed = 30F;
+    public float rotateSpeed = 200f;
 
     [Header("Scale")]
-    public float minSize = 0.5f;           // Minimum bullet size
-    public float maxSize = 7f;             // Maximum bullet size
-    public float scaleUpFactor = 1.4f;     // Factor to scale up the bullet
-    
+    public float minSize = 0.5f;
+    public float maxSize = 7f;
+    public float scaleUpFactor = 1.4f;
+
     public float trailMinSize = 0.1f;
     public float trailMaxSize = 0.5f;
 
 
+    [Header("PREDICTION")]
+    [SerializeField] private float _maxDistancePredict = 100;
+    [SerializeField] private float _minDistancePredict = 5;
+    [SerializeField] private float _maxTimePrediction = 5;
+    private Vector3 _standardPrediction, _deviatedPrediction;
+
     [Header("Time")]
-    public float maxSlowDuration = 15f;    // Maximum slow duration
-    public float lerpTime;                 // Time for lerping
-    private float currentLerpTime;         // Current lerping time
+    public float maxSlowDuration = 15f;
+    public float lerpTime;
+    private float currentLerpTime;
 
     // Variables for velocity and movement
-    private float velocityTimeElapsed;     // Time elapsed for velocity adjustments
-   
-    [SerializeField] private Rigidbody2D rigidBody; // Reference to the bullet's rigidbody
-    public Vector2 currentVelocity = Vector2.zero; // Current velocity of the bullet
+    private float velocityTimeElapsed;
+
+    [SerializeField] private Rigidbody2D rigidBody;
+    public Vector2 currentVelocity = Vector2.zero;
 
 
-    [Header ("VFX")]
+    [Header("VFX")]
     [SerializeField] private ParticleSystem explosion;
     [SerializeField] private TrailRenderer prefabTrail;
-    
+
     private TrailRenderer trail;
 
-    private Vector3 targetPosition;        // Target position for bullet movement
+    private Vector3 targetPosition;
 
-
+    #region Init
 
     private void Awake()
     {
@@ -67,13 +72,14 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         rigidBody = GetComponent<Rigidbody2D>();
         rigidBody.velocity = new Vector2(-1, 0);
     }
+    #endregion
 
     private void Update()
     {
         trail.transform.position = transform.position;
         if (wasHit)
         {
-            // Handle behavior when the bullet was hit
+            // Handle behavior when the bullet was hit by player
             velocityTimeElapsed += Time.deltaTime;
 
             if (velocityTimeElapsed >= timeBeforeSlowDown)
@@ -86,33 +92,29 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
         if (startingSlowDown)
         {
-            // Handle behavior when the bullet is starting to slow down
-            if (transform.localScale.x > minSize)
-            {
-                currentLerpTime += Time.deltaTime / maxSlowDuration;
-                lerpTime += Time.deltaTime;
-
-                float t = Mathf.Clamp01(currentLerpTime);
-
-                float newScale = Mathf.Lerp(maxSize, minSize, t);
-                float newSpeed = Mathf.Lerp(maxSpeed, minSpeed, t);
-                float newTrailSize = Mathf.Lerp(trailMaxSize, trailMinSize, t);
-
-                transform.localScale = Vector3.one * newScale;
-                rigidBody.velocity = rigidBody.velocity.normalized * newSpeed;
-                trail.time = newTrailSize;
-                currentVelocity = rigidBody.velocity;
-            }
-            else
-            {
-                inIdle = true;
-                startingSlowDown = false;
-            }
+            SizeNSlowDown();
         }
 
+        Idle();
+/*
+        PredictMovement(0);
+        RotateRocket();
+        Idle(true);
+*/
+
+        currentVelocity = rigidBody.velocity;
+    }
+
+    private void FixedUpdate()
+    {
+        
+    }
+
+    #region States
+    private void Idle()
+    {
         if (inIdle)
         {
-            
             // Handle behavior when the bullet is in idle state
             Vector3 directionToPlayer = (pInstance.playerInstance.transform.position - transform.position).normalized;
             targetPosition = pInstance.playerInstance.transform.position - directionToPlayer * 0.05f;
@@ -121,8 +123,88 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             rigidBody.velocity = smoothedVelocity;
             rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 1.25f * Time.deltaTime);
         }
-        currentVelocity = rigidBody.velocity;
     }
+
+    private void Idle(bool a)
+    {
+        if (inIdle)
+            rigidBody.velocity = transform.up * minSpeed;
+
+    }
+
+    private void PredictMovement(float leadTimePercentage)
+    {
+        var predictionTime = Mathf.Lerp(0, _maxTimePrediction, leadTimePercentage);
+        _standardPrediction = pInstance.playerInstance.transform.position + (Vector3)pInstance.playerInstance.GetRigibody().velocity * predictionTime;
+    }
+
+    private void RotateRocket()
+    {
+        Vector2 heading = pInstance.playerInstance.transform.position - transform.position;
+
+        //heading.Normalize();
+
+        float rotateAmout = Vector3.Cross(heading.normalized, transform.up).z;
+
+        rigidBody.angularVelocity = -rotateAmout * rotateSpeed;
+
+    }
+    /*
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, _standardPrediction);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(_standardPrediction, _deviatedPrediction);
+    }
+    */
+
+    private void SizeNSlowDown()
+    {
+        // Handle behavior when the bullet is starting to slow down
+        if (transform.localScale.x > minSize)
+        {
+            currentLerpTime += Time.deltaTime / maxSlowDuration;
+            lerpTime += Time.deltaTime;
+
+            float t = Mathf.Clamp01(currentLerpTime);
+
+            float newScale = Mathf.Lerp(maxSize, minSize, t);
+            float newSpeed = Mathf.Lerp(maxSpeed, minSpeed, t);
+            float newTrailSize = Mathf.Lerp(trailMaxSize, trailMinSize, t);
+
+            transform.localScale = Vector3.one * newScale;
+            rigidBody.velocity = rigidBody.velocity.normalized * newSpeed;
+            trail.time = newTrailSize;
+            currentVelocity = rigidBody.velocity;
+        }
+        else
+        {
+            inIdle = true;
+            startingSlowDown = false;
+        }
+    }
+
+    public void Striking(Vector2 direction, float speed)
+    {
+        // var speed not use for this element
+
+        inIdle = false;
+        wasHit = true;
+        startingSlowDown = false;
+
+        lerpTime = 0;
+        velocityTimeElapsed = 0;
+
+        float clampedScale = Mathf.Clamp(transform.localScale.x * scaleUpFactor, minSize, maxSize);
+        transform.localScale = Vector3.one * clampedScale;
+
+        currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
+        rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
+        trail.time = Mathf.Lerp(trailMaxSize, trailMinSize, currentLerpTime);
+
+    }
+    #endregion
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -137,23 +219,5 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         }
     }
 
-    public void Striking(Vector2 direction, float speed)
-    {
-        // var speed not use for this element
-        
-        inIdle = false;
-        wasHit = true;
-        startingSlowDown = false;
 
-        lerpTime = 0;
-        velocityTimeElapsed = 0;
-
-        float clampedScale = Mathf.Clamp(transform.localScale.x * scaleUpFactor, minSize, maxSize);
-        transform.localScale = Vector3.one * clampedScale;
-
-        currentLerpTime = Mathf.InverseLerp(maxSize, minSize, clampedScale);
-        rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
-        trail.time = Mathf.Lerp(trailMaxSize, trailMinSize, currentLerpTime);
-        
-    }
 }

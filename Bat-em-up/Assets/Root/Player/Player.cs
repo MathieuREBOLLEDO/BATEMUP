@@ -219,6 +219,11 @@ public class Player : MonoBehaviour
         }
     }
 
+    public Rigidbody2D GetRigibody()
+    {
+        return rigidBody;
+    }
+
     private void EndImpactEffect()
     {
         // Reset time scale to normal

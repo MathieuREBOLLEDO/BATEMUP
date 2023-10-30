@@ -23,7 +23,7 @@ public class Obstacle : MonoBehaviour, IStrikeable, IHiteable
     {
 
         scrol = instanceLevel.levelInstance.scrolType;
-        Debug.Log(scrol.name );
+        
         rigidBody = GetComponent<Rigidbody2D>();
 
         float camHeight = Camera.main.orthographicSize;
