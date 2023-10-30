@@ -5,8 +5,8 @@ public class Obstacle : MonoBehaviour, IStrikeable, IHiteable
     private Rigidbody2D rigidBody;
 
     [SerializeField] private EnemyMovement enemyMovement;
-    [SerializeField] private ScrollingEffect scrol;
-    private InstanceLevelManager instanceLevel;
+    private ScrollingEffect scrol;
+    [SerializeField ]private InstanceLevelManager instanceLevel;
 
     private Vector2 screenBounds;
     private bool wasInScrrenBounds = false;

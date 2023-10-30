@@ -5,11 +5,15 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - instPlayer: {fileID: 11400000, guid: 8f361d735d751284083e6d6958c287aa, type: 2}
+  - bInstance: {fileID: 11400000, guid: a9a368bdec336f347a4d2d6c873a0f48, type: 2}
   - weaponGO: {instanceID: 0}
   - weaponAnimator: {instanceID: 0}
   - weaponSwingFXAnimator: {instanceID: 0}
   - spriteRenderer: {instanceID: 0}
+  - animator: {instanceID: 0}
   - rigidBody: {instanceID: 0}
+  - gizmoArrow: {instanceID: 0}
+  - shockWave: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
