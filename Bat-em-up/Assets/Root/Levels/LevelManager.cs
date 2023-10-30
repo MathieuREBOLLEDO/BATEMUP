@@ -18,7 +18,7 @@ public class LevelManager : MonoBehaviour
 
     public void SetScrolType(ScrollingEffect scrolling)
     {
-
+        scrolType = scrolling;
     }
 
 
