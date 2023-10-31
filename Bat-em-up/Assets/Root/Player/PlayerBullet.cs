@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class PlayerBullet : MonoBehaviour, IStrikeable
 {
@@ -52,10 +51,13 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     [Header("VFX")]
     [SerializeField] private ParticleSystem explosion;
     [SerializeField] private TrailRenderer prefabTrail;
+    [SerializeField] private ParticleSystem bounceParticle;
 
     private TrailRenderer trail;
 
     private Vector3 targetPosition;
+
+    private Vector2 screenBounds;
 
     /*
     [SerializeField] ParticleSystem particle;
@@ -104,12 +106,12 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     }*/
 
 
-        #region Init
+    #region Init
 
-        private void Awake()
+    private void Awake()
     {
-
         bInstance.bulletInstance = this;
+        GetScreenBounds();
     }
 
     private void Start()
@@ -143,19 +145,22 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             SizeNSlowDown();
         }
 
-        Idle(true);
-/*
+        //Idle();
+
         PredictMovement(0);
         RotateRocket();
         Idle(true);
-*/
+
+
 
         currentVelocity = rigidBody.velocity;
+
     }
 
     private void FixedUpdate()
     {
-        
+
+        CheckForBounce();
     }
 
     #region States
@@ -188,13 +193,10 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
     private void RotateRocket()
     {
-        Vector2 heading = pInstance.playerInstance.transform.position - transform.position;
+        Vector3 heading = pInstance.playerInstance.transform.position - transform.position;
 
-        //heading.Normalize();
-
-        float rotateAmout = Vector3.Cross(heading.normalized, transform.up).z;
-
-        rigidBody.angularVelocity = -rotateAmout * rotateSpeed;
+        Quaternion rotation = Quaternion.LookRotation(Vector3.forward, heading);
+        transform.rotation = rotation;
 
     }
     /*
@@ -226,23 +228,14 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         _deviatedPrediction = _standardPrediction + predictionOffset;
     }
 
-    private void RotateRocket()
-    {
-        var heading = _deviatedPrediction - transform.position;
-
-        var rotation = Quaternion.LookRotation(heading);
-        _rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, rotation, _rotateSpeed * Time.deltaTime));
-    }
     */
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, _standardPrediction);
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(_standardPrediction, _deviatedPrediction);
     }
-    
+
 
     private void SizeNSlowDown()
     {
@@ -304,5 +297,38 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         }
     }
 
+    #region Bounce
+    private void GetScreenBounds()
+    {
+        float camHeight = Camera.main.orthographicSize;
+        float camWidth = camHeight * Camera.main.aspect;
+        screenBounds = new Vector2(camWidth, camHeight);
+    }
 
+    private void ClampPosition(Vector3 newPos)
+    {
+        newPos.x = Mathf.Clamp(newPos.x, -screenBounds.x, screenBounds.x);
+        newPos.y = Mathf.Clamp(newPos.y, -screenBounds.y, screenBounds.y);
+        transform.position = newPos;
+    }
+
+    private void CheckForBounce()
+    {
+        Vector3 newPosition = transform.position;
+        if (newPosition.x < -screenBounds.x || newPosition.x > screenBounds.x)
+        {
+            // Reflect the ball's velocity off the screen edge
+            rigidBody.velocity = new Vector2(-rigidBody.velocity.x, rigidBody.velocity.y);
+            Instantiate(bounceParticle, newPosition, Quaternion.identity);
+        }
+
+        if (newPosition.y < -screenBounds.y || newPosition.y > screenBounds.y)
+        {
+            // Reflect the ball's velocity off the screen edge
+            rigidBody.velocity = new Vector2(rigidBody.velocity.x, -rigidBody.velocity.y);
+            Instantiate(bounceParticle, newPosition, Quaternion.identity);
+        }
+        ClampPosition(newPosition);
+    }
+    #endregion
 }
