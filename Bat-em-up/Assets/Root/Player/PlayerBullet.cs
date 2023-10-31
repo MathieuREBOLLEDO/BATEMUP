@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerBullet : MonoBehaviour, IStrikeable
 {
@@ -56,9 +57,56 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
     private Vector3 targetPosition;
 
-    #region Init
+    /*
+    [SerializeField] ParticleSystem particle;
+    private Rigidbody2D rb;
+    private Vector2 screenBounds;
 
-    private void Awake()
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+
+        // Calculate screen bounds based on camera view
+        float camHeight = Camera.main.orthographicSize;
+        float camWidth = camHeight * Camera.main.aspect;
+        screenBounds = new Vector2(camWidth, camHeight);
+        //Debug.Log("Screen Bounds : " + screenBounds);
+    }
+
+    void Update()
+    {
+        // Move the ball based on its velocity
+        //transform.position += (Vector3)rb.velocity * Time.deltaTime;
+
+        // Check if the ball is outside the screen bounds
+        Vector3 newPosition = transform.position;
+        if (newPosition.x < -screenBounds.x || newPosition.x > screenBounds.x)
+        {
+            // Reflect the ball's velocity off the screen edge
+            rb.velocity = new Vector2(-rb.velocity.x, rb.velocity.y);
+            Instantiate(particle, newPosition, Quaternion.identity);
+        }
+
+        if (newPosition.y < -screenBounds.y || newPosition.y > screenBounds.y)
+        {
+            // Reflect the ball's velocity off the screen edge
+            rb.velocity = new Vector2(rb.velocity.x, -rb.velocity.y);
+            Instantiate(particle, newPosition, Quaternion.identity);
+        }
+
+        // Clamp the ball's position to screen bounds
+        newPosition.x = Mathf.Clamp(newPosition.x, -screenBounds.x, screenBounds.x);
+        newPosition.y = Mathf.Clamp(newPosition.y, -screenBounds.y, screenBounds.y);
+        transform.position = newPosition;
+
+        transform.up = rb.velocity.normalized;
+    }*/
+
+
+        #region Init
+
+        private void Awake()
     {
 
         bInstance.bulletInstance = this;
@@ -95,7 +143,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             SizeNSlowDown();
         }
 
-        Idle();
+        Idle(true);
 /*
         PredictMovement(0);
         RotateRocket();
@@ -150,6 +198,43 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
     }
     /*
+     
+    private void FixedUpdate() {
+            _rb.velocity = transform.forward * _speed;
+
+            var leadTimePercentage = Mathf.InverseLerp(_minDistancePredict, _maxDistancePredict, Vector3.Distance(transform.position, _target.transform.position));
+
+            PredictMovement(leadTimePercentage);
+
+            AddDeviation(leadTimePercentage);
+
+            RotateRocket();
+        }
+    
+    private void PredictMovement(float leadTimePercentage)
+    {
+        var predictionTime = Mathf.Lerp(0, _maxTimePrediction, leadTimePercentage);
+        _standardPrediction = _target.Rb.position + _target.Rb.velocity * predictionTime;
+    }
+
+    private void AddDeviation(float leadTimePercentage)
+    {
+        var deviation = new Vector3(Mathf.Cos(Time.time * _deviationSpeed), 0, 0);
+
+        var predictionOffset = transform.TransformDirection(deviation) * _deviationAmount * leadTimePercentage;
+
+        _deviatedPrediction = _standardPrediction + predictionOffset;
+    }
+
+    private void RotateRocket()
+    {
+        var heading = _deviatedPrediction - transform.position;
+
+        var rotation = Quaternion.LookRotation(heading);
+        _rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, rotation, _rotateSpeed * Time.deltaTime));
+    }
+    */
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -157,7 +242,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         Gizmos.color = Color.green;
         Gizmos.DrawLine(_standardPrediction, _deviatedPrediction);
     }
-    */
+    
 
     private void SizeNSlowDown()
     {

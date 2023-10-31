@@ -21,7 +21,7 @@ public class BounceEffect : MonoBehaviour
     void Update()
     {
         // Move the ball based on its velocity
-        transform.position += (Vector3)rb.velocity * Time.deltaTime;
+        //transform.position += (Vector3)rb.velocity * Time.deltaTime;
 
         // Check if the ball is outside the screen bounds
         Vector3 newPosition = transform.position;
