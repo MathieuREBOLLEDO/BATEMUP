@@ -41,6 +41,8 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     public float lerpTime;
     private float currentLerpTime;
 
+    [SerializeField] private float intervalToAdjustTrajectory = 0.15f;
+    private float intervalTimeElapsed;
     // Variables for velocity and movement
     private float velocityTimeElapsed;
 
@@ -58,53 +60,6 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     private Vector3 targetPosition;
 
     private Vector2 screenBounds;
-
-    /*
-    [SerializeField] ParticleSystem particle;
-    private Rigidbody2D rb;
-    private Vector2 screenBounds;
-
-
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-
-        // Calculate screen bounds based on camera view
-        float camHeight = Camera.main.orthographicSize;
-        float camWidth = camHeight * Camera.main.aspect;
-        screenBounds = new Vector2(camWidth, camHeight);
-        //Debug.Log("Screen Bounds : " + screenBounds);
-    }
-
-    void Update()
-    {
-        // Move the ball based on its velocity
-        //transform.position += (Vector3)rb.velocity * Time.deltaTime;
-
-        // Check if the ball is outside the screen bounds
-        Vector3 newPosition = transform.position;
-        if (newPosition.x < -screenBounds.x || newPosition.x > screenBounds.x)
-        {
-            // Reflect the ball's velocity off the screen edge
-            rb.velocity = new Vector2(-rb.velocity.x, rb.velocity.y);
-            Instantiate(particle, newPosition, Quaternion.identity);
-        }
-
-        if (newPosition.y < -screenBounds.y || newPosition.y > screenBounds.y)
-        {
-            // Reflect the ball's velocity off the screen edge
-            rb.velocity = new Vector2(rb.velocity.x, -rb.velocity.y);
-            Instantiate(particle, newPosition, Quaternion.identity);
-        }
-
-        // Clamp the ball's position to screen bounds
-        newPosition.x = Mathf.Clamp(newPosition.x, -screenBounds.x, screenBounds.x);
-        newPosition.y = Mathf.Clamp(newPosition.y, -screenBounds.y, screenBounds.y);
-        transform.position = newPosition;
-
-        transform.up = rb.velocity.normalized;
-    }*/
-
 
     #region Init
 
@@ -151,19 +106,34 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         RotateRocket();
         Idle(true);
 
-
-
         currentVelocity = rigidBody.velocity;
 
     }
 
     private void FixedUpdate()
     {
-
         CheckForBounce();
+        
+        intervalTimeElapsed += Time.deltaTime;
+        if (intervalTimeElapsed>=intervalToAdjustTrajectory)
+        {
+            Vector3 newDir = pInstance.playerInstance.transform.position - transform.position;
+            var angle = Mathf.Acos ((rigidBody.velocity.x*newDir.x + rigidBody.velocity.y* newDir.y )/ (rigidBody.velocity.magnitude * newDir.magnitude));
+            var rotateVelocity = Quaternion.AngleAxis(angle, transform.forward);
+            if (rotateVelocity != null)
+            {
+                rigidBody.velocity = rotateVelocity * currentVelocity;
+                Debug.Log("CAll change trajectory");
+            }
+            intervalTimeElapsed = 0;
+
+        }
+        
+        
     }
 
     #region States
+    /*
     private void Idle()
     {
         if (inIdle)
@@ -177,12 +147,12 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 1.25f * Time.deltaTime);
         }
     }
+    */
 
     private void Idle(bool a)
     {
-        if (inIdle)
-            rigidBody.velocity = transform.up * minSpeed;
-
+        if(inIdle)
+            rigidBody.velocity = transform.up * currentVelocity.magnitude;
     }
 
     private void PredictMovement(float leadTimePercentage)

@@ -9,6 +9,7 @@ public class EnemyMovement : ScriptableObject
 
     public enum Behavior
     {
+        none,
         statique,
         straight,
         cos,
@@ -17,6 +18,8 @@ public class EnemyMovement : ScriptableObject
     }
 
     public Behavior movement;
+
+
 
     [Header ("Basic")]
     public Vector2 direction = new Vector2(0,-1);
@@ -27,10 +30,18 @@ public class EnemyMovement : ScriptableObject
     public Vector2 axis = new Vector2(1, 0);
     private Transform targetTransform;
 
-    
+    [Header("Other")]
+    public float screenAnchor = 1f;
+    private float screenlimit;
+    private float camHeight;
+
+
+
     public void Init(Transform transform)
     {
         targetTransform = transform;
+        camHeight = Camera.main.orthographicSize;
+        screenlimit = camHeight - screenAnchor;
     }
 
     // Update is called once per frame
@@ -57,7 +68,10 @@ public class EnemyMovement : ScriptableObject
 
     private void ProcessStatique()
     {
-
+        if (targetTransform.position.y > screenlimit)
+            ProcessStraight();
+        else
+            targetTransform.position= new Vector3(targetTransform.position.x, screenlimit, targetTransform.position.z);
     }
 
     private void ProcessStraight()
