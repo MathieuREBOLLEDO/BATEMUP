@@ -281,7 +281,7 @@ MonoBehaviour:
   power: 2
   minSpeed: 15
   maxSpeed: 100
-  rotateSpeed: 1000
+  rotateSpeed: 95
   minSize: 1
   maxSize: 3
   scaleUpFactor: 1.3
@@ -292,6 +292,7 @@ MonoBehaviour:
   _maxTimePrediction: 5
   maxSlowDuration: 10
   lerpTime: 0
+  intervalToAdjustTrajectory: 0.15
   rigidBody: {fileID: 6090856777504506827}
   currentVelocity: {x: 0, y: 0}
   explosion: {fileID: 2339609284464624093, guid: 2ecc44fddfcb8ad4c8d8fa0e3db8f117, type: 3}

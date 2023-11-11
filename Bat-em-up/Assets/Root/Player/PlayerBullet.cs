@@ -102,8 +102,8 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
 
         //Idle();
 
-        PredictMovement(0);
-        RotateRocket();
+        //PredictMovement(0);
+       
         Idle(true);
 
         currentVelocity = rigidBody.velocity;
@@ -116,7 +116,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         
         intervalTimeElapsed += Time.deltaTime;
         if (intervalTimeElapsed>=intervalToAdjustTrajectory)
-        {
+        {/*
             Vector3 newDir = pInstance.playerInstance.transform.position - transform.position;
             var angle = Mathf.Acos ((rigidBody.velocity.x*newDir.x + rigidBody.velocity.y* newDir.y )/ (rigidBody.velocity.magnitude * newDir.magnitude));
             var rotateVelocity = Quaternion.AngleAxis(angle, transform.forward);
@@ -124,7 +124,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             {
                 rigidBody.velocity = rotateVelocity * currentVelocity;
                 Debug.Log("CAll change trajectory");
-            }
+            }*/
             intervalTimeElapsed = 0;
 
         }
@@ -133,7 +133,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     }
 
     #region States
-    /*
+    
     private void Idle()
     {
         if (inIdle)
@@ -147,12 +147,15 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 1.25f * Time.deltaTime);
         }
     }
-    */
+    
 
     private void Idle(bool a)
     {
-        if(inIdle)
-            rigidBody.velocity = transform.up * currentVelocity.magnitude;
+        if (inIdle)
+        {
+            RotateRocket();
+            //rigidBody.velocity = transform.up * currentVelocity.magnitude;
+        }
     }
 
     private void PredictMovement(float leadTimePercentage)
@@ -161,13 +164,31 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         _standardPrediction = pInstance.playerInstance.transform.position + (Vector3)pInstance.playerInstance.GetRigibody().velocity * predictionTime;
     }
 
-    private void RotateRocket()
+    private void RotateRocket_Homming()
     {
         Vector3 heading = pInstance.playerInstance.transform.position - transform.position;
 
         Quaternion rotation = Quaternion.LookRotation(Vector3.forward, heading);
         transform.rotation = rotation;
 
+    }
+
+    private void RotateRocket()
+    {
+        
+        Vector3 targetDirection = (pInstance.playerInstance.transform.position - transform.position).normalized;
+        
+        Vector3 newDirection = Vector3.Lerp(rigidBody.velocity.normalized, targetDirection, Time.deltaTime * rotateSpeed);
+
+        
+        
+        rigidBody.velocity =  rigidBody.velocity.magnitude * newDirection;
+
+        // Ensure the bullet is always facing its direction of motion
+        if (rigidBody.velocity != Vector2.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, rigidBody.velocity);
+        }
     }
     /*
      
