@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 3c1159cbd09f3bc4b8d8cd892e2d4307
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - enemyMovement: {fileID: 11400000, guid: d04f4476bfead43da84fd6407601ffdb, type: 2}
+  - instanceLevel: {fileID: 11400000, guid: 208c3f2f515ba41c28399b0f0a622f63, type: 2}
+  - sprite: {instanceID: 0}
+  - receiver: {instanceID: 0}
+  - lifebar: {instanceID: 0}
+  - lifebarSprite: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

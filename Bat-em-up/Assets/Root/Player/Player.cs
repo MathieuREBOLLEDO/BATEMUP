@@ -1,10 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 
 
-// Alias the UnityEngine.Debug class as Debug to avoid conflicts with System.Diagnostics.Debug
+enum PlayerStates
+{
+    Idle,
+    
+    Striking,
+
+
+}
+
 
 public class Player : MonoBehaviour
 {

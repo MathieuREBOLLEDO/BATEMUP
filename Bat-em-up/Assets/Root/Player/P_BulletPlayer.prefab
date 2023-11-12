@@ -179,7 +179,6 @@ GameObject:
   - component: {fileID: 796040340308285896}
   - component: {fileID: 3060094041839153181}
   - component: {fileID: -7772928068953543284}
-  - component: {fileID: 4228991809464579867}
   - component: {fileID: 6090856777504506827}
   - component: {fileID: 6156543167307009825}
   - component: {fileID: 195319926866550561}
@@ -281,36 +280,19 @@ MonoBehaviour:
   power: 2
   minSpeed: 15
   maxSpeed: 100
-  rotateSpeed: 95
+  rotateSpeed: 0.35
   minSize: 1
   maxSize: 3
   scaleUpFactor: 1.3
   trailMinSize: 0.1
   trailMaxSize: 0.5
-  _maxDistancePredict: 100
-  _minDistancePredict: 5
-  _maxTimePrediction: 5
   maxSlowDuration: 10
   lerpTime: 0
-  intervalToAdjustTrajectory: 0.15
   rigidBody: {fileID: 6090856777504506827}
   currentVelocity: {x: 0, y: 0}
   explosion: {fileID: 2339609284464624093, guid: 2ecc44fddfcb8ad4c8d8fa0e3db8f117, type: 3}
   prefabTrail: {fileID: 3178034356263962132, guid: ce7fd06931d340649944c437069defba, type: 3}
   bounceParticle: {fileID: 6836043524777029563, guid: 14936218bb48c4f449c62a9aa3885f48, type: 3}
---- !u!114 &4228991809464579867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5513844394755072050}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea5af4e1c99a88e4293c1fd0b5708b84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  particle: {fileID: 6836043524777029563, guid: 14936218bb48c4f449c62a9aa3885f48, type: 3}
 --- !u!50 &6090856777504506827
 Rigidbody2D:
   serializedVersion: 4

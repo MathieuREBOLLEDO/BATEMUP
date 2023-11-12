@@ -1,5 +1,13 @@
 using UnityEngine;
 
+enum BulletStates
+{
+    Idle,
+    SlowDown,
+    Hitting,
+    WasStrike
+}
+
 public class PlayerBullet : MonoBehaviour, IStrikeable
 {
     //public static Player_Bullet instance_PBullet;
@@ -7,12 +15,7 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     [SerializeField] private GetPlayerInstance pInstance;
     [SerializeField] private GetBulletInstance bInstance;
 
-    // Variables for bullet state and behavior
-    public bool inIdle = true;
-    public bool wasHit = false;
-    public bool startingSlowDown = false;
-    public float timeBeforeSlowDown = 0.25f;
-    public float smoothTime = 0.1f;
+    [SerializeField] private BulletStates bState;
 
     // Variables for bullet properties
     public float power = 15f;
@@ -29,21 +32,13 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     public float trailMinSize = 0.1f;
     public float trailMaxSize = 0.5f;
 
-
-    [Header("PREDICTION")]
-    [SerializeField] private float _maxDistancePredict = 100;
-    [SerializeField] private float _minDistancePredict = 5;
-    [SerializeField] private float _maxTimePrediction = 5;
-    private Vector3 _standardPrediction, _deviatedPrediction;
-
     [Header("Time")]
     public float maxSlowDuration = 15f;
+    public float timeBeforeSlowDown = 0.25f;
+    public float smoothTime = 0.1f;
     public float lerpTime;
     private float currentLerpTime;
 
-    [SerializeField] private float intervalToAdjustTrajectory = 0.15f;
-    private float intervalTimeElapsed;
-    // Variables for velocity and movement
     private float velocityTimeElapsed;
 
     [SerializeField] private Rigidbody2D rigidBody;
@@ -82,154 +77,65 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
     private void Update()
     {
         trail.transform.position = transform.position;
-        if (wasHit)
-        {
-            // Handle behavior when the bullet was hit by player
-            velocityTimeElapsed += Time.deltaTime;
-
-            if (velocityTimeElapsed >= timeBeforeSlowDown)
-            {
-                currentVelocity = rigidBody.velocity;
-                startingSlowDown = true;
-                wasHit = false;
-            }
-        }
-
-        if (startingSlowDown)
-        {
-            SizeNSlowDown();
-        }
-
-        //Idle();
-
-        //PredictMovement(0);
-       
-        Idle(true);
 
         currentVelocity = rigidBody.velocity;
 
+        switch (bState)
+        {
+            case BulletStates.Idle:
+                currentVelocity = Idle();
+                break;
+
+            case BulletStates.WasStrike:
+                TimeCheckBeforeSlowDown();
+                currentVelocity = rigidBody.velocity;
+                break;
+
+            case BulletStates.SlowDown:
+                currentVelocity = SizeNSlowDown();
+                break;
+
+        }
+
+        currentVelocity = MoveTowardPlayer();
+
+        rigidBody.velocity = currentVelocity;
     }
 
     private void FixedUpdate()
     {
         CheckForBounce();
-        
-        intervalTimeElapsed += Time.deltaTime;
-        if (intervalTimeElapsed>=intervalToAdjustTrajectory)
-        {/*
-            Vector3 newDir = pInstance.playerInstance.transform.position - transform.position;
-            var angle = Mathf.Acos ((rigidBody.velocity.x*newDir.x + rigidBody.velocity.y* newDir.y )/ (rigidBody.velocity.magnitude * newDir.magnitude));
-            var rotateVelocity = Quaternion.AngleAxis(angle, transform.forward);
-            if (rotateVelocity != null)
-            {
-                rigidBody.velocity = rotateVelocity * currentVelocity;
-                Debug.Log("CAll change trajectory");
-            }*/
-            intervalTimeElapsed = 0;
 
-        }
-        
-        
     }
 
     #region States
-    
-    private void Idle()
+
+    private void TimeCheckBeforeSlowDown()
     {
-        if (inIdle)
-        {
-            // Handle behavior when the bullet is in idle state
-            Vector3 directionToPlayer = (pInstance.playerInstance.transform.position - transform.position).normalized;
-            targetPosition = pInstance.playerInstance.transform.position - directionToPlayer * 0.05f;
-            Vector2 desiredVelocity = (targetPosition - transform.position).normalized * maxSpeed;
-            Vector2 smoothedVelocity = Vector2.SmoothDamp(rigidBody.velocity, desiredVelocity, ref currentVelocity, smoothTime);
-            rigidBody.velocity = smoothedVelocity;
-            rigidBody.velocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 1.25f * Time.deltaTime);
-        }
-    }
-    
+        velocityTimeElapsed += Time.deltaTime;
 
-    private void Idle(bool a)
-    {
-        if (inIdle)
-        {
-            RotateRocket();
-            //rigidBody.velocity = transform.up * currentVelocity.magnitude;
-        }
-    }
-
-    private void PredictMovement(float leadTimePercentage)
-    {
-        var predictionTime = Mathf.Lerp(0, _maxTimePrediction, leadTimePercentage);
-        _standardPrediction = pInstance.playerInstance.transform.position + (Vector3)pInstance.playerInstance.GetRigibody().velocity * predictionTime;
-    }
-
-    private void RotateRocket_Homming()
-    {
-        Vector3 heading = pInstance.playerInstance.transform.position - transform.position;
-
-        Quaternion rotation = Quaternion.LookRotation(Vector3.forward, heading);
-        transform.rotation = rotation;
-
-    }
-
-    private void RotateRocket()
-    {
+        if (velocityTimeElapsed >= timeBeforeSlowDown)        
+            bState = BulletStates.SlowDown;
         
-        Vector3 targetDirection = (pInstance.playerInstance.transform.position - transform.position).normalized;
-        
-        Vector3 newDirection = Vector3.Lerp(rigidBody.velocity.normalized, targetDirection, Time.deltaTime * rotateSpeed);
-
-        
-        
-        rigidBody.velocity =  rigidBody.velocity.magnitude * newDirection;
-
-        // Ensure the bullet is always facing its direction of motion
-        if (rigidBody.velocity != Vector2.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(Vector3.forward, rigidBody.velocity);
-        }
-    }
-    /*
-     
-    private void FixedUpdate() {
-            _rb.velocity = transform.forward * _speed;
-
-            var leadTimePercentage = Mathf.InverseLerp(_minDistancePredict, _maxDistancePredict, Vector3.Distance(transform.position, _target.transform.position));
-
-            PredictMovement(leadTimePercentage);
-
-            AddDeviation(leadTimePercentage);
-
-            RotateRocket();
-        }
-    
-    private void PredictMovement(float leadTimePercentage)
-    {
-        var predictionTime = Mathf.Lerp(0, _maxTimePrediction, leadTimePercentage);
-        _standardPrediction = _target.Rb.position + _target.Rb.velocity * predictionTime;
     }
 
-    private void AddDeviation(float leadTimePercentage)
+    private Vector2 Idle()
     {
-        var deviation = new Vector3(Mathf.Cos(Time.time * _deviationSpeed), 0, 0);
+        Vector2 tmpVelocity = currentVelocity;
 
-        var predictionOffset = transform.TransformDirection(deviation) * _deviationAmount * leadTimePercentage;
+        // Handle behavior when the bullet is in idle state
+        Vector3 directionToPlayer = (pInstance.playerInstance.transform.position - transform.position).normalized;
+        targetPosition = pInstance.playerInstance.transform.position - directionToPlayer * 0.05f;
+        Vector2 desiredVelocity = (targetPosition - transform.position).normalized * maxSpeed;
+        Vector2 smoothedVelocity = Vector2.SmoothDamp(rigidBody.velocity, desiredVelocity, ref currentVelocity, smoothTime);
+        tmpVelocity = smoothedVelocity;
+        tmpVelocity = Vector2.Lerp(smoothedVelocity, Vector2.zero, 1.25f * Time.deltaTime);
 
-        _deviatedPrediction = _standardPrediction + predictionOffset;
+        return tmpVelocity;
     }
-
-    */
-
-    private void OnDrawGizmos()
+    private Vector2 SizeNSlowDown()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, _standardPrediction);
-    }
-
-
-    private void SizeNSlowDown()
-    {
+        Vector2 tmpVelocity = currentVelocity;
         // Handle behavior when the bullet is starting to slow down
         if (transform.localScale.x > minSize)
         {
@@ -243,24 +149,38 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
             float newTrailSize = Mathf.Lerp(trailMaxSize, trailMinSize, t);
 
             transform.localScale = Vector3.one * newScale;
-            rigidBody.velocity = rigidBody.velocity.normalized * newSpeed;
+            tmpVelocity = rigidBody.velocity.normalized * newSpeed;
             trail.time = newTrailSize;
-            currentVelocity = rigidBody.velocity;
         }
+
         else
         {
-            inIdle = true;
-            startingSlowDown = false;
+            bState = BulletStates.Idle;
         }
+
+        return tmpVelocity;
+    }
+
+    private Vector2 MoveTowardPlayer()
+    {
+        Vector2 playerPos = new Vector2(pInstance.playerInstance.transform.position.x, pInstance.playerInstance.transform.position.y);
+
+        float tmpMagnitude = currentVelocity.magnitude;
+        Vector2 currentDirection = currentVelocity.normalized;
+        Vector2 dirToPlayer = (playerPos - (Vector2)transform.position).normalized;
+
+        Vector2 newDirection = new Vector2(Mathf.Lerp(currentDirection.x, dirToPlayer.x, Time.deltaTime * rotateSpeed), currentDirection.y);
+
+        return newDirection * tmpMagnitude;
+
     }
 
     public void Striking(Vector2 direction, float speed)
     {
         // var speed not use for this element
 
-        inIdle = false;
-        wasHit = true;
-        startingSlowDown = false;
+        bState = BulletStates.WasStrike;
+
 
         lerpTime = 0;
         velocityTimeElapsed = 0;
@@ -272,20 +192,6 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         rigidBody.velocity = direction * Mathf.Lerp(maxSpeed, minSpeed, currentLerpTime);
         trail.time = Mathf.Lerp(trailMaxSize, trailMinSize, currentLerpTime);
 
-    }
-    #endregion
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.GetComponent<MonoBehaviour>() as IHiteable != null)
-        {
-            Vector2 collisionNormal = (transform.position - collision.transform.position).normalized;
-            collision.GetComponent<IHiteable>().Hitting(collisionNormal, transform.localScale.x);
-            GameObject.Instantiate(explosion, transform.position, Quaternion.identity);
-
-            rigidBody.velocity = collisionNormal * rigidBody.velocity;
-            //rigidBody.velocity = Vector2.Reflect(currentVelocity, collisionNormal);
-        }
     }
 
     #region Bounce
@@ -321,5 +227,30 @@ public class PlayerBullet : MonoBehaviour, IStrikeable
         }
         ClampPosition(newPosition);
     }
+
+    private void BounceOnEnnemy(Collider2D other, Vector2 normal)
+    {
+        GameObject.Instantiate(bounceParticle, transform.position, Quaternion.identity);
+        rigidBody.velocity = normal * currentVelocity.magnitude;
+
+    }
     #endregion
+    #endregion
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Vector2 collisionNormal = (transform.position - collision.transform.position).normalized;
+        if (collision.GetComponent<MonoBehaviour>() as IHiteable != null)
+        {
+            BounceOnEnnemy(collision, collisionNormal);
+            collision.GetComponent<IHiteable>().Hitting(collisionNormal, transform.localScale.x);
+        }
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + (Vector3)currentVelocity.normalized * currentVelocity.magnitude / 10);
+    }
 }
