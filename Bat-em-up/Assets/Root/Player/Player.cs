@@ -7,11 +7,8 @@ using UnityEngine.Events;
 
 enum PlayerStates
 {
-    Idle,
-    
+    Idle,    
     Striking,
-
-
 }
 
 
@@ -45,8 +42,6 @@ public class Player : MonoBehaviour
     [SerializeField] private Animator weaponSwingFXAnimator;
 
     [Header("Boolean States")]
-    [SerializeField] private bool canShoot = true;
-    [SerializeField] private bool canBeDamaged = true;
     [SerializeField] private bool isAttacking = false;
     [SerializeField] private bool isHurt = false;
     [SerializeField] private bool isDead = false;
